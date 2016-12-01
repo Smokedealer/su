@@ -26,6 +26,7 @@ public class Cluster extends ArrayList<Point> {
             double coordinateSum = 0;
 
             for(Point p : this){
+                coordinateSum += p.getCoordinates()[i];
             }
 
             coordinateSum /= size();
