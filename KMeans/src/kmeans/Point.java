@@ -6,6 +6,9 @@ import java.util.Arrays;
  * Created by Matěj Kareš on 30.11.2016.
  */
 public class Point {
+    static int pointID = 0;
+
+    int id;
 
     /** Dimension of the point. 1D, 2D, 3D, 4D, etc. */
     private int dimension;
@@ -17,16 +20,18 @@ public class Point {
     public Point(int dimension, double[] coordinates) {
         this.dimension = dimension;
         this.coordinates = coordinates;
+        this.id = pointID++;
     }
 
     public Point(int dimension) {
-        this.dimension = dimension;
-        this.coordinates = new double[dimension];
+        this(dimension, new double[dimension]);
     }
 
     public Point(double[] coordinates) {
-        this.coordinates = coordinates;
-        this.dimension = coordinates.length;
+        this(coordinates.length, coordinates);
+    }
+    public Point(Point point) {
+        this(point.coordinates);
     }
 
     public Point(){
@@ -88,6 +93,12 @@ public class Point {
         return distance;
     }
 
+
+    public void moveTo(Point to){
+        this.coordinates = to.coordinates;
+    }
+
+
     public int getDimension() {
         return dimension;
     }
@@ -110,7 +121,7 @@ public class Point {
 
     @Override
     public String toString() {
-        return "Point{" +
+        return "Point " + id + " {" +
                 "coordinates=" + Arrays.toString(coordinates) +
                 '}';
     }
@@ -121,8 +132,7 @@ public class Point {
 
         for(int i = 0; i < dimension; i++){
             if(coordinates[i] != other.coordinates[i]){
-                match = false;
-                break;
+                return false;
             }
         }
 

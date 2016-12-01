@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * Created by kares on 30.11.2016.
  */
-public class KMeans {
+public class KMeans implements ICluster{
 
     int dimension;
 
@@ -18,23 +18,28 @@ public class KMeans {
 
     Cluster[] clusters;
 
+    int iterations = 10;
 
-    public KMeans(int dimension, Point[] data, int clusterCount) {
-        this.dimension = dimension;
+
+
+    @Override
+    public void doClustering(Point[] data, int clusterCount) {
+        //Wrong data
+        if(data == null || data.length == 0) return;
+
+
+        this.dimension = data[0].getDimension();
         this.data = data;
         this.clusterCount = clusterCount;
+
         centroids = new Point[clusterCount];
         clusters = new Cluster[clusterCount];
     }
 
-    public KMeans() {
-
-    }
-
-    public void go(){
+    public void start(){
         initCentroids();
 
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < iterations; i++){
             assignCentroids();
             adjustCentroids();
         }
@@ -44,38 +49,21 @@ public class KMeans {
         }
     }
 
+    /**
+     * Initializes centroids at locations of the few first data points.
+     */
     private void initCentroids(){
         Point rndPoint;
 
         Random rng = new Random();
 
+        //Assign each centroid to
         for(int i = 0; i < clusterCount; i++){
             clusters[i] = new Cluster();
-
-            Point centroidPotentialPoint;
-
-            do {
-                rndPoint = data[rng.nextInt(data.length)];
-                centroidPotentialPoint = new Point(rndPoint.getCoordinates());
-
-                centroids[i] = centroidPotentialPoint;
-            }while (isStartingPointFree(centroidPotentialPoint));
+            centroids[i] = new Point(data[i]);
         }
-
     }
 
-    private boolean isStartingPointFree(Point point){
-        boolean free = true;
-
-        for(Point centroid : centroids){
-            if(centroid.equals(point)){
-                free = false;
-                break;
-            }
-        }
-
-        return free;
-    }
 
     private void assignCentroids(){
 
@@ -87,17 +75,21 @@ public class KMeans {
             int closestCentroidIndex = getClosestCentroid(point);
             clusters[closestCentroidIndex].add(point);
         }
-
-
     }
 
 
 
     private void adjustCentroids(){
         for(int i = 0; i < clusters.length; i++){
+
             Cluster cluster = clusters[i];
 
-            centroids[i] = (cluster.geometricalMiddle());
+            Point old = new Point(centroids[i]);
+            Point fresh = cluster.geometricalMiddle();
+
+            System.out.println("Centroid " + centroids[i].id + " moved by " + old.eulerDistanceTo(fresh));
+
+            centroids[i].moveTo(fresh);
         }
     }
 
@@ -105,7 +97,6 @@ public class KMeans {
     private int getClosestCentroid(Point point){
         double minValue = Double.MAX_VALUE;
         int closestCentroidIndex = 0;
-        int centroidIndex = 0;
 
         for (int j = 0; j < centroids.length; j++) {
             Point centroid = centroids[j];
@@ -121,5 +112,6 @@ public class KMeans {
 
         return closestCentroidIndex;
     }
+
 
 }

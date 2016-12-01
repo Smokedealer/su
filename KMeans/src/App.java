@@ -9,16 +9,25 @@ public class App {
     public static void main(String[] args) {
 
 
-        double[] pdata1 = {-2, -2};
-        double[] pdata2 = {-3, -2};
-        double[] pdata3 = {-2, -3};
-        double[] pdata4 = {-3, -3};
+//        double[] pdata1 = {-2, -2};
+//        double[] pdata2 = {-3, -2};
+//        double[] pdata3 = {-2, -3};
+//        double[] pdata4 = {-3, -3};
+//
+//        double[] pdata5 = {2, 2};
+//        double[] pdata6 = {3, 2};
+//        double[] pdata7 = {2, 3};
+//        double[] pdata8 = {3, 3};
 
-        double[] pdata5 = {2, 2};
-        double[] pdata6 = {3, 2};
-        double[] pdata7 = {2, 3};
-        double[] pdata8 = {3, 3};
 
+        double[] pdata1 = {1, 1};
+        double[] pdata2 = {2, 2};
+        double[] pdata3 = {3, 3};
+        double[] pdata4 = {4, 4};
+        double[] pdata5 = {5, 5};
+        double[] pdata6 = {6, 6};
+        double[] pdata7 = {7, 7};
+        double[] pdata8 = {8, 8};
 
         Point point1 = new Point(pdata1);
         Point point2 = new Point(pdata2);
@@ -31,8 +40,10 @@ public class App {
 
         Point[] data = {point1, point2, point3, point4, point5, point6, point7, point8};
 
-        KMeans km = new KMeans(2,data,2);
-        km.go();
+        KMeans km = new KMeans();
+        km.doClustering(data, 4);
+
+        km.start();
 
     }
 
