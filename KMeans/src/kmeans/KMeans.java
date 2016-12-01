@@ -11,19 +11,37 @@ public class KMeans {
     int dimension;
 
     Point[] centroids;
+
     Point[] data;
+
     int clusterCount;
+
+    Cluster[] clusters;
 
 
     public KMeans(int dimension, Point[] data, int clusterCount) {
         this.dimension = dimension;
         this.data = data;
         this.clusterCount = clusterCount;
+        centroids = new Point[clusterCount];
+        clusters = new Cluster[clusterCount];
     }
 
     public KMeans() {
-        int a = magnitude(new Point(-5, -5), new Point(0,0));
-        System.out.println(a);
+
+    }
+
+    public void go(){
+        initCentroids();
+
+        for(int i = 0; i < 5; i++){
+            assignCentroids();
+            adjustCentroids();
+        }
+
+        for(Point centroid : centroids){
+            System.out.println(centroid.toString());
+        }
     }
 
     private void initCentroids(){
@@ -32,60 +50,76 @@ public class KMeans {
         Random rng = new Random();
 
         for(int i = 0; i < clusterCount; i++){
+            clusters[i] = new Cluster();
 
-            rndPoint = data[rng.nextInt(data.length)];
+            Point centroidPotentialPoint;
 
-            centroids[i] = new Point(rndPoint.getX(), rndPoint.getY());
+            do {
+                rndPoint = data[rng.nextInt(data.length)];
+                centroidPotentialPoint = new Point(rndPoint.getCoordinates());
+
+                centroids[i] = centroidPotentialPoint;
+            }while (isStartingPointFree(centroidPotentialPoint));
         }
 
     }
 
-    private void computeDistances(){
-        for(int i = 0; i < centroids.length; i++){
+    private boolean isStartingPointFree(Point point){
+        boolean free = true;
 
-        }
-    }
-
-    private void assignToCentroids(){
-
-    }
-
-    private void adjustCentroids(){
-
-    }
-
-
-    private int getClosestPoint(Point point){
-        int minValue = 0;
-        int closestPointIndex = 0;
-
-        for(int i = 0; i < centroids.length; i++){
-            Point centroid = centroids[i];
-
-            int actDistance = magnitude(centroid, point);
-
-            if(actDistance < minValue){
-                minValue = actDistance;
-                closestPointIndex = i;
+        for(Point centroid : centroids){
+            if(centroid.equals(point)){
+                free = false;
+                break;
             }
         }
 
-        return closestPointIndex;
+        return free;
     }
 
-    private int magnitude(Point a, Point b){
-        int distance;
+    private void assignCentroids(){
 
-        int zeroedX = a.getX() - b.getX();
-        int zeroedY = a.getY() - b.getY();
+        for(Cluster cluster : clusters){
+            cluster.clear();
+        }
 
-        Point zeroed = new Point(zeroedX, zeroedY);
+        for(Point point : data){
+            int closestCentroidIndex = getClosestCentroid(point);
+            clusters[closestCentroidIndex].add(point);
+        }
 
-        double magnitude = Math.sqrt(zeroed.getX() * zeroed.getX() + zeroed.getY() * zeroed.getY());
 
-        distance = (int) magnitude;
+    }
 
-        return distance;
+
+
+    private void adjustCentroids(){
+        for(int i = 0; i < clusters.length; i++){
+            Cluster cluster = clusters[i];
+
+            centroids[i] = (cluster.geometricalMiddle());
+        }
+    }
+
+
+    private int getClosestCentroid(Point point){
+        double minValue = Double.MAX_VALUE;
+        int closestCentroidIndex = 0;
+        int centroidIndex = 0;
+
+        for (int j = 0; j < centroids.length; j++) {
+            Point centroid = centroids[j];
+
+            double actDistance = point.eulerDistanceTo(centroid);
+
+            if (actDistance < minValue) {
+                minValue = actDistance;
+                closestCentroidIndex = j;
+            }
+
+        }
+
+        return closestCentroidIndex;
     }
 
 }
