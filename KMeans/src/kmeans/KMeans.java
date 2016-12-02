@@ -37,6 +37,8 @@ public class KMeans implements ICluster{
     }
 
     public void start(){
+        if(data == null || data.length == 0) return;
+
         initCentroids();
 
         for(int i = 0; i < iterations; i++){

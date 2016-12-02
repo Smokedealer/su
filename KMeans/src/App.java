@@ -1,5 +1,6 @@
 import kmeans.KMeans;
 import kmeans.Point;
+import utils.DataGenerator;
 
 /**
  * Created by kares on 30.11.2016.
@@ -8,41 +9,17 @@ public class App {
 
     public static void main(String[] args) {
 
+        DataGenerator dg = new DataGenerator(100, 20000, 1000);
 
-//        double[] pdata1 = {-2, -2};
-//        double[] pdata2 = {-3, -2};
-//        double[] pdata3 = {-2, -3};
-//        double[] pdata4 = {-3, -3};
-//
-//        double[] pdata5 = {2, 2};
-//        double[] pdata6 = {3, 2};
-//        double[] pdata7 = {2, 3};
-//        double[] pdata8 = {3, 3};
+        Point[] data = dg.generateData();
 
+        for(Point p : data){
+            System.out.println(p.toString());
+        }
 
-        double[] pdata1 = {1, 1};
-        double[] pdata2 = {2, 2};
-        double[] pdata3 = {3, 3};
-        double[] pdata4 = {4, 4};
-        double[] pdata5 = {5, 5};
-        double[] pdata6 = {6, 6};
-        double[] pdata7 = {7, 7};
-        double[] pdata8 = {8, 8};
-
-        Point point1 = new Point(pdata1);
-        Point point2 = new Point(pdata2);
-        Point point3 = new Point(pdata3);
-        Point point4 = new Point(pdata4);
-        Point point5 = new Point(pdata5);
-        Point point6 = new Point(pdata6);
-        Point point7 = new Point(pdata7);
-        Point point8 = new Point(pdata8);
-
-        Point[] data = {point1, point2, point3, point4, point5, point6, point7, point8};
 
         KMeans km = new KMeans();
-        km.doClustering(data, 4);
-
+        km.doClustering(data, 50);
         km.start();
 
     }

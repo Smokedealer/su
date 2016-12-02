@@ -54,12 +54,8 @@ public class Point {
 
         for(int i = 0; i < dimension; i++){
             //Transpose to the base (zero)
-            try {
-                zeroed.coordinates[i] = coordinates[i] - point.coordinates[i];
+            zeroed.coordinates[i] = coordinates[i] - point.coordinates[i];
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             //Square distance
             sumOfPartialDistances += zeroed.coordinates[i] * zeroed.coordinates[i];
         }
@@ -121,11 +117,8 @@ public class Point {
 
     @Override
     public String toString() {
-        return "Point " + id + " {" +
-                "coordinates=" + Arrays.toString(coordinates) +
-                '}';
+        return "Point " + id + " {" + Arrays.toString(coordinates) + '}';
     }
-
 
     public boolean equals(Point other) {
         boolean match = true;
