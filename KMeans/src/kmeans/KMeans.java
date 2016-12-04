@@ -8,6 +8,8 @@ import java.util.Random;
  */
 public class KMeans implements ICluster{
 
+    int distanceMethod;
+
     int dimension;
 
     Point[] centroids;
@@ -21,23 +23,26 @@ public class KMeans implements ICluster{
     int iterations = 10;
 
 
+    public static final int DISTANCE_EULER = 0;
+    public static final int DISTANCE_MANHATTAN = 1;
+    public static final int DISTANCE_COSIN = 2;
+
+
 
     @Override
-    public void doClustering(Point[] data, int clusterCount) {
+    public Cluster[] doClustering(Point[] data, int clusterCount) {
+
         //Wrong data
-        if(data == null || data.length == 0) return;
+        if(data == null || data.length == 0) return null;
 
 
         this.dimension = data[0].getDimension();
         this.data = data;
         this.clusterCount = clusterCount;
+        this.distanceMethod = 0;
 
         centroids = new Point[clusterCount];
         clusters = new Cluster[clusterCount];
-    }
-
-    public void start(){
-        if(data == null || data.length == 0) return;
 
         initCentroids();
 
@@ -49,12 +54,17 @@ public class KMeans implements ICluster{
         for(Point centroid : centroids){
             System.out.println(centroid.toString());
         }
+
+        return clusters;
     }
+
+
 
     /**
      * Initializes centroids at locations of the few first data points.
      */
     private void initCentroids(){
+
         Point rndPoint;
 
         Random rng = new Random();
@@ -82,6 +92,7 @@ public class KMeans implements ICluster{
 
 
     private void adjustCentroids(){
+
         for(int i = 0; i < clusters.length; i++){
 
             Cluster cluster = clusters[i];
@@ -89,7 +100,7 @@ public class KMeans implements ICluster{
             Point old = new Point(centroids[i]);
             Point fresh = cluster.geometricalMiddle();
 
-            System.out.println("Centroid " + centroids[i].id + " moved by " + old.eulerDistanceTo(fresh));
+            System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
 
             centroids[i].moveTo(fresh);
         }
@@ -97,13 +108,14 @@ public class KMeans implements ICluster{
 
 
     private int getClosestCentroid(Point point){
+
         double minValue = Double.MAX_VALUE;
         int closestCentroidIndex = 0;
 
         for (int j = 0; j < centroids.length; j++) {
             Point centroid = centroids[j];
 
-            double actDistance = point.eulerDistanceTo(centroid);
+            double actDistance = getDistance(point, centroid);
 
             if (actDistance < minValue) {
                 minValue = actDistance;
@@ -113,6 +125,52 @@ public class KMeans implements ICluster{
         }
 
         return closestCentroidIndex;
+    }
+
+
+    private double getDistance(Point a, Point b){
+
+        double distance = 0;
+
+        switch (distanceMethod){
+            case DISTANCE_EULER:
+                distance = a.eulerDistanceTo(b);
+                break;
+
+            case DISTANCE_MANHATTAN:
+                distance = a.manhattanDistanceTo(b);
+                break;
+
+            case DISTANCE_COSIN:
+                distance = a.cosineDistanceTo(b);
+                break;
+
+            default:
+                distance = a.eulerDistanceTo(b);
+                break;
+        }
+
+        return distance;
+    }
+
+
+    public Cluster assignToCluster(Point point){
+        if (point == null){
+            System.err.println("Null Point cannot be assigned to a cluster.");
+            return null;
+        }
+
+        int index = getClosestCentroid(point);
+        clusters[index].add(point);
+
+        System.out.println(point.toString() + " was assigned to cluster " + clusters[index].getId() + ".");
+
+        return clusters[index];
+    }
+
+
+    public void setDistanceMethod(int method){
+        this.distanceMethod = method;
     }
 
 

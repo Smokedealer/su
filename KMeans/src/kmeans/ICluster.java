@@ -5,6 +5,7 @@ package kmeans;
  */
 public interface ICluster {
 
-    void doClustering(Point[] data, int clusterCount);
+    Cluster[] doClustering(Point[] data, int clusterCount);
 
+    Cluster assignToCluster(Point point);
 }
