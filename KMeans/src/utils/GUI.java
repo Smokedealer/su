@@ -45,8 +45,7 @@ class ClusteringCanvas extends JPanel{
 
         g2.setColor(Color.BLACK);
 
-        drawGuideLines(g2);
-
+        //drawGuideLines(g2);
 
         double [] globalBounds = new double[4];
 
@@ -82,10 +81,6 @@ class ClusteringCanvas extends JPanel{
             globalBounds[3] = minY;
         }
 
-        System.out.println("Global max X: " + globalBounds[0]);
-        System.out.println("Global min X: " + globalBounds[1]);
-        System.out.println("Global max Y: " + globalBounds[2]);
-        System.out.println("Global min Y: " + globalBounds[3]);
 
         double scaleX = getWidth() / (globalBounds[0] - globalBounds[1]);
         double scaleY = getHeight() / (globalBounds[2] - globalBounds[3]);
@@ -110,7 +105,6 @@ class ClusteringCanvas extends JPanel{
                 g2.drawRect(x-2, y-2, 4,4);
             }
 
-            System.out.println("cluster: " + i);
             i++;
         }
 

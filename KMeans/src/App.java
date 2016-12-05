@@ -17,7 +17,7 @@ public class App {
         Point[] data = null;
 
         try {
-            DataGenerator dg = new DataGenerator(2, 1000000, 50);
+            DataGenerator dg = new DataGenerator(2, 800000, 50);
             data = dg.generateData();
         }catch (Exception e){
             System.err.println("Invalid data for DataGenerator.");
@@ -25,7 +25,7 @@ public class App {
 
         KMeans km = new KMeans();
         km.setDistanceMethod(KMeans.DISTANCE_EULER);
-        Cluster[] returned =  km.doClustering(data, 2);
+        Cluster[] returned =  km.doClustering(data, 40);
 
 
         GUI gui = new GUI();

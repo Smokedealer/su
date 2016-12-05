@@ -20,12 +20,13 @@ public class KMeans implements ICluster{
 
     Cluster[] clusters;
 
-    int iterations = 10;
+    double alpha;
+    double lastBiggestAdjustment;
+    int maxInterations;
 
 
     public static final int DISTANCE_EULER = 0;
     public static final int DISTANCE_MANHATTAN = 1;
-    public static final int DISTANCE_COSIN = 2;
 
 
 
@@ -35,21 +36,25 @@ public class KMeans implements ICluster{
         //Wrong data
         if(data == null || data.length == 0) return null;
 
-
         this.dimension = data[0].getDimension();
         this.data = data;
         this.clusterCount = clusterCount;
-        this.distanceMethod = 0;
+        this.lastBiggestAdjustment = Double.MIN_VALUE;
+        this.alpha = 0.1;
+        this.maxInterations = 100;
 
         centroids = new Point[clusterCount];
         clusters = new Cluster[clusterCount];
 
         initCentroids();
 
-        for(int i = 0; i < iterations; i++){
+        int iteration = 0;
+
+        do{
+            System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
             assignCentroids();
             adjustCentroids();
-        }
+        }while (!convergenceIsLow(++iteration));
 
         for(Point centroid : centroids){
             System.out.println(centroid.toString());
@@ -58,17 +63,20 @@ public class KMeans implements ICluster{
         return clusters;
     }
 
+    private boolean convergenceIsLow(int iteration){
+        boolean result = false;
+
+        if(lastBiggestAdjustment < alpha || iteration > maxInterations) result = true;
+
+        return result;
+    }
+
 
 
     /**
      * Initializes centroids at locations of the few first data points.
      */
     private void initCentroids(){
-
-        Point rndPoint;
-
-        Random rng = new Random();
-
         //Assign each centroid to
         for(int i = 0; i < clusterCount; i++){
             clusters[i] = new Cluster();
@@ -92,6 +100,8 @@ public class KMeans implements ICluster{
 
 
     private void adjustCentroids(){
+        double iterBiggestAdjustment = 0;
+        lastBiggestAdjustment = 0;
 
         for(int i = 0; i < clusters.length; i++){
 
@@ -100,10 +110,16 @@ public class KMeans implements ICluster{
             Point old = new Point(centroids[i]);
             Point fresh = cluster.geometricalMiddle();
 
-            System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
+            //System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
+
+            double change = getDistance(old, fresh);
+
+            if(change > iterBiggestAdjustment) iterBiggestAdjustment = change;
 
             centroids[i].moveTo(fresh);
         }
+
+        lastBiggestAdjustment = iterBiggestAdjustment;
     }
 
 
@@ -141,9 +157,6 @@ public class KMeans implements ICluster{
                 distance = a.manhattanDistanceTo(b);
                 break;
 
-            case DISTANCE_COSIN:
-                distance = a.cosineDistanceTo(b);
-                break;
 
             default:
                 distance = a.eulerDistanceTo(b);
@@ -173,5 +186,14 @@ public class KMeans implements ICluster{
         this.distanceMethod = method;
     }
 
+    public void setAlpha(double alpha) {
+        if(alpha < 0) alpha = 0;
 
+        this.alpha = alpha;
+    }
+
+    public void setMaxInterations(int maxInterations) {
+        if(maxInterations < 1) maxInterations = 1;
+        this.maxInterations = maxInterations;
+    }
 }

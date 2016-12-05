@@ -75,43 +75,19 @@ public class Point {
      */
     public double manhattanDistanceTo(Point point){
         Point zeroed = new Point(dimension, null);
-        double distance = 0;
 
         //We need to sum all the distances through all dimensions.
         double sumOfPartialDistances = 0;
 
         for(int i = 0; i < dimension; i++){
             //Transpose to the base (zero)
-            zeroed.coordinates[i] = Math.abs(this.coordinates[i] - point.coordinates[i]);
-            sumOfPartialDistances += zeroed.coordinates[i];
+            //zeroed.coordinates[i] = Math.abs(this.coordinates[i] - point.coordinates[i]);
+            sumOfPartialDistances +=  Math.abs(this.coordinates[i] - point.coordinates[i]);
         }
 
-        return distance;
+        return sumOfPartialDistances;
     }
 
-
-    /**
-     * Determines the Cosine distance between this and given point.
-     * N-Dimensional algorithm.
-     *
-     * @param point - target point
-     * @return double - distance between said points
-     */
-    public double cosineDistanceTo(Point point){
-        Point zeroed = new Point(dimension, null);
-        double distance = 0;
-
-        //We need to sum all the distances through all dimensions.
-        double sumOfPartialDistances = 0;
-
-        for(int i = 0; i < dimension; i++){
-            //Transpose to the base (zero)
-            zeroed.coordinates[i] = Math.abs(this.coordinates[i] - point.coordinates[i]);
-            sumOfPartialDistances += zeroed.coordinates[i];
-        }
-
-        return distance;
-    }
 
 
     public void moveTo(Point to){
