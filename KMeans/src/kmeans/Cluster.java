@@ -92,7 +92,7 @@ public class Cluster extends ArrayList<Point> {
         int count = 0;
 
         for(Point p : this){
-            average += centroid.eukleidDistanceTo(p);
+            average += Math.pow(centroid.eukleidDistanceTo(p), 2d);
             count++;
         }
 

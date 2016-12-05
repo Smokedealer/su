@@ -17,20 +17,22 @@ public class App {
         Point[] data = null;
 
         try {
-            DataGenerator dg = new DataGenerator(2, 800000, 50);
-            data = dg.generateData();
+            DataGenerator dg = new DataGenerator(2, 8000, 50);
+            data = dg.generateClusteredData(5);
         }catch (Exception e){
             System.err.println("Invalid data for DataGenerator.");
         }
 
-        KMeans km = new KMeans();
-        km.setDistanceMethod(KMeans.DISTANCE_EUKLEID);
-        Cluster[] returned =  km.doClustering(data, 40);
+        for(int i = 0; i < 1; i++) {
+            KMeans km = new KMeans();
+            km.setDistanceMethod(KMeans.DISTANCE_EUKLEID);
+            Cluster[] returned = km.doClustering(data, 5);
 
 
-        GUI gui = new GUI();
-        gui.repaint();
-        gui.drawData(returned);
+            GUI gui = new GUI();
+            gui.repaint();
+            gui.drawData(returned);
+        }
 
         //scanInput(km);
     }

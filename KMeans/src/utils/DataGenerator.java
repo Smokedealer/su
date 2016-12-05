@@ -35,23 +35,29 @@ public class DataGenerator {
         return data;
     }
 
-    public Point[] generateClusteredData(){
+    public Point[] generateClusteredData(int clustersCount){
         data = new Point[pointCount];
 
         Random rng = new Random();
 
-        int maxPointsPerCluster = pointCount / ((rng.nextInt() + 1) % 5);
+        Point center = null;
+        int maxPointsPerCluster = pointCount / clustersCount;
+        int clusterSize = 0;
 
         int i = 0;
+
         while(i < pointCount){
 
-            Point center = generateRandomPoint(this.spread);
-
-            for(int j = rng.nextInt() % maxPointsPerCluster; i < pointCount && j > 0; j--) {
-                data[i] = generateNearRandomPoint(center, this.spread / 10);
-                i++;
+            if(clustersCount > 0 && clusterSize <= 0) {
+                center = generateRandomPoint(this.spread);
+                clusterSize = rng.nextInt(maxPointsPerCluster / 2) + maxPointsPerCluster / 2;
+                clustersCount--;
+                System.out.println("cluster " + clustersCount);
             }
 
+            data[i] = generateNearRandomPoint(center, this.spread / 7);
+            i++;
+            clusterSize--;
         }
 
         return data;
