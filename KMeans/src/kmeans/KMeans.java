@@ -9,20 +9,31 @@ import java.util.Random;
  */
 public class KMeans implements ICluster{
 
+    /** Method used for determining distances of points **/
     int distanceMethod;
 
+    /** Dimension the K-Means is dealing with **/
     int dimension;
 
+    /** Array of centroids **/
     Point[] centroids;
 
+    /** Data for clustering **/
     Point[] data;
 
+    /** Number of clusters to be done **/
     int clusterCount;
 
+    /** Array of clusters **/
     Cluster[] clusters;
 
+    /** If the convergence is lower than this amount, algorithm will stop **/
     double alpha;
+
+    /** Biggest distance traveled by a centroid in one iteration **/
     double lastBiggestAdjustment;
+
+    /** Failsafe for ending the iterations **/
     int maxInterations;
 
 
