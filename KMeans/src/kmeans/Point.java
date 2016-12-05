@@ -111,6 +111,10 @@ public class Point {
         this.coordinates = coordinates;
     }
 
+    public double getSpecificCoord(int dimension){
+        return coordinates[dimension];
+    }
+
     public void setSpecificCoord(int dimension, double value){
         coordinates[dimension] = value;
     }

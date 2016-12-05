@@ -45,12 +45,11 @@ public class Cluster extends ArrayList<Point> {
 
     public double[] getBounds(){
 
-
         double[] bounds = new double[4];
 
-        double maxX = Double.MIN_VALUE;
+        double maxX = -Double.MAX_VALUE;
         double minX = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
+        double maxY = -Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
 
         for(Point p : this){
@@ -59,8 +58,7 @@ public class Cluster extends ArrayList<Point> {
             if(coords[0] > maxX){
                 maxX = coords[0];
             }
-
-            else if(coords[0] < minX){
+            if(coords[0] < minX){
                 minX = coords[0];
             }
 
@@ -73,8 +71,7 @@ public class Cluster extends ArrayList<Point> {
             if(coords[1] > maxY){
                 maxY = coords[1];
             }
-
-            else if(coords[1] < minY){
+            if(coords[1] < minY){
                 minY = coords[1];
             }
         }
@@ -83,7 +80,6 @@ public class Cluster extends ArrayList<Point> {
         bounds[1] = minX;
         bounds[2] = maxY;
         bounds[3] = minY;
-
 
         return bounds;
     }

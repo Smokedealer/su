@@ -43,15 +43,11 @@ class ClusteringCanvas extends JPanel{
 
         Graphics2D g2 = image.createGraphics();
 
-        g2.setColor(Color.BLACK);
-
-        //drawGuideLines(g2);
-
         double [] globalBounds = new double[4];
 
-        double maxX = Double.MIN_VALUE;
+        double maxX = -Double.MAX_VALUE;
         double minX = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
+        double maxY = -Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
 
         for(Cluster cluster : clusters){
@@ -62,7 +58,6 @@ class ClusteringCanvas extends JPanel{
             if(localBounds[0] > maxX){
                 maxX = localBounds[0];
             }
-
             if(localBounds[1] < minX){
                 minX = localBounds[1];
             }
@@ -70,7 +65,6 @@ class ClusteringCanvas extends JPanel{
             if(localBounds[2] > maxY){
                 maxY = localBounds[2];
             }
-
             if(localBounds[3] < minY){
                 minY = localBounds[3];
             }
@@ -85,6 +79,9 @@ class ClusteringCanvas extends JPanel{
         double scaleX = getWidth() / (globalBounds[0] - globalBounds[1]);
         double scaleY = getHeight() / (globalBounds[2] - globalBounds[3]);
 
+
+        drawGuideLines(g2, globalBounds, scaleX, scaleY);
+
         int i = 0;
 
         for(Cluster cluster : clusters){
@@ -92,13 +89,16 @@ class ClusteringCanvas extends JPanel{
             for(Point point : cluster){
                 int x = (int)((point.getCoordinates()[0] - globalBounds[1]) * scaleX);
 
-                int y = getHeight() / 2;
+                int y;
 
                 if(point.getDimension() > 1){
-                    y = (int)((point.getCoordinates()[1] - globalBounds[3]) * scaleY);
+                    y = getHeight() - (int)((point.getCoordinates()[1] - globalBounds[3]) * scaleY);
+                }
+                else {
+                    y = getHeight() / 2;
                 }
 
-                g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.9f));
+                g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.85f));
                 g2.fillRect(x-1, y-1, 3,3);
 
                 g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.6f));
@@ -111,9 +111,15 @@ class ClusteringCanvas extends JPanel{
         repaint();
     }
 
-    private void drawGuideLines(Graphics2D g2) {
-        g2.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
-        g2.drawLine(getWidth()/2, 0, getWidth()/2, getHeight());
+    private void drawGuideLines(Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
+
+        g2.setColor(Color.LIGHT_GRAY);
+
+        int x = (int)((0 - globalBounds[1]) * scaleX);
+        int y = getHeight() - (int)((0 - globalBounds[3]) * scaleY);
+
+        g2.drawLine(0, y, getWidth(), y);
+        g2.drawLine(x, 0, x, getHeight());
     }
 
     @Override
