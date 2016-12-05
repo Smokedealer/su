@@ -2,6 +2,7 @@ package utils;
 
 import kmeans.Point;
 
+import javax.swing.text.html.HTMLDocument;
 import java.util.Random;
 
 /**
@@ -20,7 +21,9 @@ public class DataGenerator {
 
     double spread;
 
-    public DataGenerator(int dimension, int pointCount, double spread) {
+    public DataGenerator(int dimension, int pointCount, double spread) throws Exception {
+        if(dimension <= 0 ||pointCount <= 0 || spread <= 0) throw new Exception();
+
         this.dimension = dimension;
         this.pointCount = pointCount;
         this.spread = spread;

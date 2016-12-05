@@ -1,5 +1,6 @@
 package kmeans;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -43,6 +44,8 @@ public class Cluster extends ArrayList<Point> {
 
 
     public double[] getBounds(){
+
+
         double[] bounds = new double[4];
 
         double maxX = Double.MIN_VALUE;
@@ -59,6 +62,12 @@ public class Cluster extends ArrayList<Point> {
 
             else if(coords[0] < minX){
                 minX = coords[0];
+            }
+
+            if(p.getDimension() < 2) {
+                maxY = 0;
+                minY = 0;
+                continue;
             }
 
             if(coords[1] > maxY){

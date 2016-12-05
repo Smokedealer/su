@@ -5,8 +5,6 @@ import kmeans.Point;
 import utils.DataGenerator;
 import utils.GUI;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -16,20 +14,25 @@ public class App {
 
     public static void main(String[] args) {
 
-        DataGenerator dg = new DataGenerator(2, 4, 50);
+        Point[] data = null;
 
-        Point[] data = dg.generateData();
+        try {
+            DataGenerator dg = new DataGenerator(2, 1000000, 50);
+            data = dg.generateData();
+        }catch (Exception e){
+            System.err.println("Invalid data for DataGenerator.");
+        }
 
         KMeans km = new KMeans();
-        km.setDistanceMethod(KMeans.DISTANCE_MANHATTAN);
+        km.setDistanceMethod(KMeans.DISTANCE_EULER);
         Cluster[] returned =  km.doClustering(data, 2);
 
-        scanInput(km);
 
-//
-//        GUI gui = new GUI();
-//        gui.repaint();
-//        gui.drawData(returned);
+        GUI gui = new GUI();
+        gui.repaint();
+        gui.drawData(returned);
+
+        //scanInput(km);
     }
 
     static void scanInput(ICluster clustering){
