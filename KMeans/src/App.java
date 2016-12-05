@@ -24,7 +24,7 @@ public class App {
         }
 
         KMeans km = new KMeans();
-        km.setDistanceMethod(KMeans.DISTANCE_EULER);
+        km.setDistanceMethod(KMeans.DISTANCE_EUKLEID);
         Cluster[] returned =  km.doClustering(data, 40);
 
 

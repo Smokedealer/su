@@ -11,6 +11,8 @@ public class Cluster extends ArrayList<Point> {
 
     private int id;
 
+    Point centroid;
+
     public Cluster(){
         super();
         id = clusterID++;
@@ -82,5 +84,20 @@ public class Cluster extends ArrayList<Point> {
         bounds[3] = minY;
 
         return bounds;
+    }
+
+
+    public double average(){
+        double average = 0;
+        int count = 0;
+
+        for(Point p : this){
+            average += centroid.eukleidDistanceTo(p);
+            count++;
+        }
+
+        average /= count;
+
+        return average;
     }
 }
