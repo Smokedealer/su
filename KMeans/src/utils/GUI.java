@@ -101,6 +101,15 @@ class ClusteringCanvas extends JPanel{
                 g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.85f));
                 g2.fillRect(x-1, y-1, 3,3);
 
+
+                /*
+                //Underpainting (too resource heavy)
+                Color color = Color.getHSBColor(i * (1f / clusters.length), 1f, 0.85f);
+                g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 5));
+
+                g2.fillOval(x-15, y-15 , 30, 30);
+                */
+
                 g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.6f));
                 g2.drawRect(x-2, y-2, 4,4);
             }

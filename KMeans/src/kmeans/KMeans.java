@@ -1,8 +1,7 @@
 package kmeans;
 
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by kares on 30.11.2016.
@@ -36,6 +35,8 @@ public class KMeans implements ICluster{
     /** Failsafe for ending the iterations **/
     int maxInterations;
 
+    SortedMap<Double, Cluster[]> results;
+
 
     public static final int DISTANCE_EUKLEID = 0;
     public static final int DISTANCE_MANHATTAN = 1;
@@ -43,10 +44,10 @@ public class KMeans implements ICluster{
 
 
     @Override
-    public Cluster[] doClustering(Point[] data, int clusterCount) {
+    public Cluster[] doClustering(Point[] data, int clusterCount, int nCount) {
 
         //Wrong data
-        if(data == null || data.length == 0) return null;
+        if(data == null || data.length == 0 || nCount <= 0) return null;
 
         this.dimension = data[0].getDimension();
         this.data = data;
@@ -54,7 +55,18 @@ public class KMeans implements ICluster{
         this.lastBiggestAdjustment = Double.MIN_VALUE;
         this.alpha = 0;
         this.maxInterations = 10000000;
+        this.results = new TreeMap<Double, Cluster[]>();
 
+
+        for (int i = 0; i < nCount; i++){
+            start();
+        }
+
+        return results.get(results.firstKey());
+    }
+
+
+    private void start(){
         centroids = new Point[clusterCount];
         clusters = new Cluster[clusterCount];
 
@@ -65,16 +77,17 @@ public class KMeans implements ICluster{
         do{
             assignCentroids();
             adjustCentroids();
-            System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
+            //System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
         }while (!convergenceIsLow(++iteration));
 
-        jFunction();
+        double jValue = jFunction();
 
         for(Point centroid : centroids){
             System.out.println(centroid.toString());
         }
 
-        return clusters;
+        results.put(jValue, clusters);
+
     }
 
     private boolean convergenceIsLow(int iteration){
@@ -87,7 +100,7 @@ public class KMeans implements ICluster{
 
 
 
-    private void jFunction(){
+    private double jFunction(){
         double average = 0;
         int count = 0;
 
@@ -99,6 +112,8 @@ public class KMeans implements ICluster{
         average /= count;
 
         System.out.println("Function J: " + average);
+
+        return average;
     }
 
 
@@ -158,6 +173,8 @@ public class KMeans implements ICluster{
 
             Point old = new Point(centroids[i]);
             Point fresh = cluster.geometricalMiddle();
+
+            if(cluster.size() == 0) continue;
 
             //System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
 
