@@ -17,15 +17,15 @@ public class App {
         Point[] data = null;
 
         try {
-            DataGenerator dg = new DataGenerator(2, 800000, 50);
+            DataGenerator dg = new DataGenerator(2, 500000, 50);
             data = dg.generateData();
         }catch (Exception e){
             System.err.println("Invalid data for DataGenerator.");
         }
 
         KMeans km = new KMeans();
-        km.setDistanceMethod(KMeans.DISTANCE_EULER);
-        Cluster[] returned =  km.doClustering(data, 40);
+        km.setDistanceMethod(KMeans.DISTANCE_EUKLEID);
+        Cluster[] returned =  km.doClustering(data, 3);
 
 
         GUI gui = new GUI();

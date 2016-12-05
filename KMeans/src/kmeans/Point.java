@@ -30,13 +30,11 @@ public class Point {
     public Point(double[] coordinates) {
         this(coordinates.length, coordinates);
     }
+
     public Point(Point point) {
         this(point.coordinates);
     }
 
-    public Point(){
-
-    }
 
     /**
      * Determines the Euler distance between this and given point.
@@ -45,7 +43,7 @@ public class Point {
      * @param point - target point
      * @return double - distance between said points
      */
-    public double eulerDistanceTo(Point point){
+    public double eukleidDistanceTo(Point point){
         Point zeroed = new Point(dimension, new double[dimension]);
         double distance = 0;
 
@@ -80,8 +78,6 @@ public class Point {
         double sumOfPartialDistances = 0;
 
         for(int i = 0; i < dimension; i++){
-            //Transpose to the base (zero)
-            //zeroed.coordinates[i] = Math.abs(this.coordinates[i] - point.coordinates[i]);
             sumOfPartialDistances +=  Math.abs(this.coordinates[i] - point.coordinates[i]);
         }
 

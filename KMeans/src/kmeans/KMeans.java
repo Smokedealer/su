@@ -1,6 +1,7 @@
 package kmeans;
 
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -25,7 +26,7 @@ public class KMeans implements ICluster{
     int maxInterations;
 
 
-    public static final int DISTANCE_EULER = 0;
+    public static final int DISTANCE_EUKLEID = 0;
     public static final int DISTANCE_MANHATTAN = 1;
 
 
@@ -40,8 +41,8 @@ public class KMeans implements ICluster{
         this.data = data;
         this.clusterCount = clusterCount;
         this.lastBiggestAdjustment = Double.MIN_VALUE;
-        this.alpha = 0.1;
-        this.maxInterations = 100;
+        this.alpha = 0;
+        this.maxInterations = 10000000;
 
         centroids = new Point[clusterCount];
         clusters = new Cluster[clusterCount];
@@ -51,10 +52,12 @@ public class KMeans implements ICluster{
         int iteration = 0;
 
         do{
-            System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
             assignCentroids();
             adjustCentroids();
+            System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
         }while (!convergenceIsLow(++iteration));
+
+        jFunction();
 
         for(Point centroid : centroids){
             System.out.println(centroid.toString());
@@ -66,9 +69,25 @@ public class KMeans implements ICluster{
     private boolean convergenceIsLow(int iteration){
         boolean result = false;
 
-        if(lastBiggestAdjustment < alpha || iteration > maxInterations) result = true;
+        if(lastBiggestAdjustment <= alpha || iteration > maxInterations) result = true;
 
         return result;
+    }
+
+
+
+    private void jFunction(){
+        double average = 0;
+        int count = 0;
+
+        for (Cluster cluster : clusters){
+            average += cluster.average();
+            count++;
+        }
+
+        average /= count;
+
+        System.out.println("Function J: " + average);
     }
 
 
@@ -77,10 +96,23 @@ public class KMeans implements ICluster{
      * Initializes centroids at locations of the few first data points.
      */
     private void initCentroids(){
+        ArrayList<Integer> startingPoints = new ArrayList<Integer>(clusterCount);
+
+        Random rng = new Random();
+
         //Assign each centroid to
         for(int i = 0; i < clusterCount; i++){
             clusters[i] = new Cluster();
-            centroids[i] = new Point(data[i]);
+
+            int randomIndex = 0;
+
+            do {
+                randomIndex = rng.nextInt(data.length);
+            }while (startingPoints.contains(randomIndex));
+
+            startingPoints.add(randomIndex);
+
+            centroids[i] = new Point(data[randomIndex]);
         }
     }
 
@@ -92,8 +124,14 @@ public class KMeans implements ICluster{
         }
 
         for(Point point : data){
+            //Get the closest centroid
             int closestCentroidIndex = getClosestCentroid(point);
+
+            //Add point to the cluster
             clusters[closestCentroidIndex].add(point);
+
+            //Give the cluster reference to it's centroid
+            clusters[closestCentroidIndex].centroid = centroids[closestCentroidIndex];
         }
     }
 
@@ -144,13 +182,13 @@ public class KMeans implements ICluster{
     }
 
 
-    private double getDistance(Point a, Point b){
+    public double getDistance(Point a, Point b){
 
         double distance = 0;
 
         switch (distanceMethod){
-            case DISTANCE_EULER:
-                distance = a.eulerDistanceTo(b);
+            case DISTANCE_EUKLEID:
+                distance = a.eukleidDistanceTo(b);
                 break;
 
             case DISTANCE_MANHATTAN:
@@ -159,7 +197,7 @@ public class KMeans implements ICluster{
 
 
             default:
-                distance = a.eulerDistanceTo(b);
+                distance = a.eukleidDistanceTo(b);
                 break;
         }
 
