@@ -36,7 +36,7 @@ public class DataGenerator {
         Random rng = new Random();
 
         for(int i = 0; i < pointCount; i++){
-            Point generatedPoint = null;
+            Point generatedPoint;
             generatedPoint = new Point(dimension);
 
             for(int j = 0; j < dimension; j++){
