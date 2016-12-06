@@ -18,7 +18,7 @@ public class App {
 
         try {
             DataGenerator dg = new DataGenerator(2, 30000, 50);
-            data = dg.generateClusteredData(15);
+            data = dg.generateClusteredData(5);
             //data = dg.generateData();
         }catch (Exception e){
             System.err.println("Invalid data for DataGenerator.");
@@ -26,8 +26,14 @@ public class App {
 
 
         KMeans km = new KMeans();
-        km.setDistanceMethod(KMeans.DISTANCE_EUKLEID);
-        Cluster[] returned = km.doClustering(data, 15, 3);
+        Cluster[] returned = km.doClustering(data, 0, 20);
+
+
+        System.out.println("Final Centroid locations");
+
+        for(Cluster cluster : returned){
+            System.out.println(cluster.getCentroid().toString());
+        }
 
 
         GUI gui = new GUI();

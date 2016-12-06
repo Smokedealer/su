@@ -62,10 +62,10 @@ public class DataGenerator {
                 center = generateRandomPoint(this.spread);
                 clusterSize = rng.nextInt(maxPointsPerCluster / 2 + 1) + maxPointsPerCluster / 2;
                 clustersCount--;
-                System.out.println("cluster " + clustersCount);
+                //System.out.println("cluster " + clustersCount);
             }
 
-            data[i] = generateNearRandomPoint(center, this.spread / 7);
+            data[i] = generateNearRandomPoint(center, this.spread / 20);
             i++;
             clusterSize--;
         }

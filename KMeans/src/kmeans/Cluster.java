@@ -100,4 +100,8 @@ public class Cluster extends ArrayList<Point> {
 
         return average;
     }
+
+    public Point getCentroid() {
+        return centroid;
+    }
 }
