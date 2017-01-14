@@ -82,6 +82,23 @@ class ClusteringCanvas extends JPanel{
 
         drawGuideLines(g2, globalBounds, scaleX, scaleY);
 
+        drawClusters(g2, clusters, globalBounds, scaleX, scaleY);
+
+        repaint();
+    }
+
+    private void drawGuideLines(Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
+
+        g2.setColor(Color.LIGHT_GRAY);
+
+        int x = (int)((0 - globalBounds[1]) * scaleX);
+        int y = getHeight() - (int)((0 - globalBounds[3]) * scaleY);
+
+        g2.drawLine(0, y, getWidth(), y);
+        g2.drawLine(x, 0, x, getHeight());
+    }
+
+    private void drawClusters(Graphics2D g2, Cluster[] clusters, double[] globalBounds, double scaleX, double scaleY){
         int i = 0;
 
         for(Cluster cluster : clusters){
@@ -116,19 +133,6 @@ class ClusteringCanvas extends JPanel{
 
             i++;
         }
-
-        repaint();
-    }
-
-    private void drawGuideLines(Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
-
-        g2.setColor(Color.LIGHT_GRAY);
-
-        int x = (int)((0 - globalBounds[1]) * scaleX);
-        int y = getHeight() - (int)((0 - globalBounds[3]) * scaleY);
-
-        g2.drawLine(0, y, getWidth(), y);
-        g2.drawLine(x, 0, x, getHeight());
     }
 
     @Override
