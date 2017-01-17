@@ -1,4 +1,4 @@
-package kmeans;
+package structures;
 
 import java.util.Arrays;
 
@@ -16,6 +16,9 @@ public class Point {
     /** Coordinates of this point in it's dimension. */
     private double[] coordinates;
 
+    private boolean visited;
+
+    private boolean outlier;
 
     public Point(int dimension, double[] coordinates) {
         this.dimension = dimension;
@@ -113,6 +116,22 @@ public class Point {
 
     public void setSpecificCoord(int dimension, double value){
         coordinates[dimension] = value;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public boolean isOutlier() {
+        return outlier;
+    }
+
+    public void setOutlier(boolean outlier) {
+        this.outlier = outlier;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package utils;
 
-import kmeans.*;
-import kmeans.Point;
+import structures.Cluster;
+import structures.Point;
 
 import javax.swing.*;
 import java.awt.*;

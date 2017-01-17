@@ -1,12 +1,16 @@
 package kmeans;
 
 
+import structures.Cluster;
+import structures.ICluster;
+import structures.Point;
+
 import java.util.*;
 
 /**
  * Created by kares on 30.11.2016.
  */
-public class KMeans implements ICluster{
+public class KMeans implements ICluster {
 
     public static final int DISTANCE_EUKLEID = 0;
     public static final int DISTANCE_MANHATTAN = 1;
@@ -254,11 +258,13 @@ public class KMeans implements ICluster{
             //Get the closest centroid
             int closestCentroidIndex = getClosestCentroid(point);
 
+            Cluster cluster = clusters[closestCentroidIndex];
+
             //Add point to the cluster
-            clusters[closestCentroidIndex].add(point);
+            cluster.add(point);
 
             //Give the cluster reference to it's centroid
-            clusters[closestCentroidIndex].centroid = centroids[closestCentroidIndex];
+            cluster.setCentroid(centroids[closestCentroidIndex]);
         }
     }
 

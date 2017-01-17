@@ -1,6 +1,5 @@
-package kmeans;
+package structures;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -99,6 +98,10 @@ public class Cluster extends ArrayList<Point> {
         average /= count;
 
         return average;
+    }
+
+    public void setCentroid(Point centroid) {
+        this.centroid = centroid;
     }
 
     public Point getCentroid() {

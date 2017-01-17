@@ -1,4 +1,7 @@
-package kmeans;
+package structures;
+
+import structures.Cluster;
+import structures.Point;
 
 /**
  * Created by Matěj Kareš on 01.12.2016.

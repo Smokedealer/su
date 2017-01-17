@@ -1,6 +1,6 @@
 package utils;
 
-import kmeans.Point;
+import structures.Point;
 import java.util.Random;
 
 /**

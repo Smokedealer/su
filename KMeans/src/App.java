@@ -1,7 +1,8 @@
-import kmeans.Cluster;
-import kmeans.ICluster;
+import dbscan.DBScan;
+import structures.Cluster;
+import structures.ICluster;
 import kmeans.KMeans;
-import kmeans.Point;
+import structures.Point;
 import utils.DataGenerator;
 import utils.GUI;
 
@@ -17,17 +18,21 @@ public class App {
         Point[] data = null;
 
         try {
-            DataGenerator dg = new DataGenerator(2, 30000, 50);
+            DataGenerator dg = new DataGenerator(2, 3000, 50);
             data = dg.generateClusteredData(5);
             //data = dg.generateData();
         }catch (Exception e){
             System.err.println("Invalid data for DataGenerator.");
         }
 
+        tryDBScan(data);
 
+        //scanInput(km);
+    }
+
+    static void tryKMeans(Point[] data){
         KMeans km = new KMeans();
         Cluster[] returned = km.doClustering(data, 0, 20);
-
 
         System.out.println("Final Centroid locations");
 
@@ -35,13 +40,20 @@ public class App {
             System.out.println(cluster.getCentroid().toString());
         }
 
+        GUI gui = new GUI();
+        gui.repaint();
+        gui.drawData(returned);
+    }
+
+
+
+    static void tryDBScan(Point[] data){
+        DBScan dbscan = new DBScan();
+        Cluster[] returned = dbscan.doClustering(data, 0, 0);
 
         GUI gui = new GUI();
         gui.repaint();
         gui.drawData(returned);
-
-
-        //scanInput(km);
     }
 
     static void scanInput(ICluster clustering){
@@ -63,5 +75,8 @@ public class App {
             clustering.assignToCluster(newPoint);
         }
     }
+
+
+
 
 }
