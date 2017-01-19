@@ -36,11 +36,11 @@ public class App {
         }
 
         startTimer();
-        tryDBScan(data);
+        tryKMeans(data);
         stopTimer();
 
         startTimer();
-        tryKMeans(data);
+        tryDBScan(data);
         stopTimer();
 
         //scanInput(km);
@@ -97,7 +97,7 @@ public class App {
 
         return points;
     }
-    
+
     static void scanInput(ICluster clustering) {
         Scanner sc = new Scanner(System.in);
 
