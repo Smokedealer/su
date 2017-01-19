@@ -84,11 +84,11 @@ public class KMeans implements ICluster {
         this.lastBiggestAdjustment = Double.MIN_VALUE;
         this.convergenceThreshold = 0.01;
         this.maxIterations = 1000;
-        this.results = new TreeMap<Double, Cluster[]>();
+        this.results = new TreeMap<>();
 
         if(isElbowingEnabled){
 
-            elbowValues = new ArrayList<Double>();
+            elbowValues = new ArrayList<>();
 
             int iteration = 0;
 
@@ -102,7 +102,7 @@ public class KMeans implements ICluster {
                     return null;
                 }
 
-                this.results = new TreeMap<Double, Cluster[]>();
+                this.results = new TreeMap<>();
 
                 for (int i = 0; i < nCount; i++){
                     System.out.println("Restarting algorithm. Round " + i + ".");
@@ -323,7 +323,7 @@ public class KMeans implements ICluster {
 
         switch (distanceMethod){
             case DISTANCE_EUKLEID:
-                distance = a.eukleidDistanceTo(b);
+                distance = a.euclideanDistanceTo(b);
                 break;
 
             case DISTANCE_MANHATTAN:
@@ -332,7 +332,7 @@ public class KMeans implements ICluster {
 
 
             default:
-                distance = a.eukleidDistanceTo(b);
+                distance = a.euclideanDistanceTo(b);
                 break;
         }
 

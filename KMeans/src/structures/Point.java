@@ -1,11 +1,12 @@
 package structures;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by Matěj Kareš on 30.11.2016.
  */
-public class Point {
+public class Point implements Serializable {
     static int pointID = 0;
 
     int id;
@@ -46,26 +47,22 @@ public class Point {
      * @param point - target point
      * @return double - distance between said points
      */
-    public double eukleidDistanceTo(Point point){
-        Point zeroed = new Point(dimension, new double[dimension]);
-        double distance = 0;
-
-        //For each dimension we need their distance
+    public double euclideanDistanceTo(Point point){
+        double zeroedDim; // for each dimension we need their zeroed distance (point acts as base)
         double sumOfPartialDistances = 0;
 
         for(int i = 0; i < dimension; i++){
             //Transpose to the base (zero)
-            zeroed.coordinates[i] = coordinates[i] - point.coordinates[i];
+            zeroedDim = coordinates[i] - point.coordinates[i];
 
             //Square distance
-            sumOfPartialDistances += zeroed.coordinates[i] * zeroed.coordinates[i];
+            sumOfPartialDistances += zeroedDim * zeroedDim;
         }
 
         //Distance is the square root of the sum of partial distances
-        distance = Math.sqrt(sumOfPartialDistances);
-
-        return distance;
+        return Math.sqrt(sumOfPartialDistances);
     }
+
 
     /**
      * Determines the Manhattan distance between this and given point.
@@ -75,13 +72,11 @@ public class Point {
      * @return double - distance between said points
      */
     public double manhattanDistanceTo(Point point){
-        Point zeroed = new Point(dimension, null);
-
         //We need to sum all the distances through all dimensions.
         double sumOfPartialDistances = 0;
 
         for(int i = 0; i < dimension; i++){
-            sumOfPartialDistances +=  Math.abs(this.coordinates[i] - point.coordinates[i]);
+            sumOfPartialDistances += Math.abs(this.coordinates[i] - point.coordinates[i]);
         }
 
         return sumOfPartialDistances;

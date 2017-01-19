@@ -35,17 +35,17 @@ public class DataGenerator {
         return data;
     }
 
-    public Point[] generate1Data(){
+    public Point[] generateLineData(){
         data = new Point[pointCount];
 
         for(int i = 0; i < pointCount; i++){
-            data[i] = generate1Point();
+            data[i] = generatePointOnLine();
         }
 
         return data;
     }
 
-    public Point[] generateClusteredData(int clustersCount){
+    public Point[] generateClusteredData(double centroidsSpread, int clustersCount){
         data = new Point[pointCount];
 
         Random rng = new Random();
@@ -59,7 +59,7 @@ public class DataGenerator {
         while(i < pointCount){
 
             if(clustersCount > 0 && clusterSize <= 0) {
-                center = generateRandomPoint(this.spread);
+                center = generateRandomPoint(centroidsSpread);
                 clusterSize = rng.nextInt(maxPointsPerCluster / 2 + 1) + maxPointsPerCluster / 2;
                 clustersCount--;
                 //System.out.println("cluster " + clustersCount);
@@ -97,7 +97,7 @@ public class DataGenerator {
 
         return generatedPoint;
     }
-    private Point generate1Point() {
+    private Point generatePointOnLine() {
         Point generatedPoint = new Point(dimension);
         Random rng = new Random();
 

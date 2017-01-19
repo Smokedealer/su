@@ -5,6 +5,7 @@ import structures.ICluster;
 import structures.Point;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Matěj Kareš on 17.01.2017.
@@ -27,7 +28,7 @@ public class DBScan implements ICluster {
     private int clusterCount;
 
     /** Array of clusters **/
-    private ArrayList<Cluster> clusters;
+    private List<Cluster> clusters;
 
     /** Fail safe for ending the iterations **/
     private int maxIterations;
@@ -44,14 +45,11 @@ public class DBScan implements ICluster {
 
         this.data = data;
         //clusterCount is not used, DBScan determines cluster count by itself
-        clusters = new ArrayList<Cluster>();
+        clusters = new ArrayList<>();
 
         start();
 
-        Cluster[] results = new Cluster[clusters.size()];
-        results = clusters.toArray(results);
-
-        return results;
+        return clusters.toArray(new Cluster[0]);
     }
 
 
@@ -61,7 +59,7 @@ public class DBScan implements ICluster {
 
             p.setVisited(true);
 
-            ArrayList<Point> neighbours = getNeighbours(p, maxDistance);
+            List<Point> neighbours = getNeighbours(p, maxDistance);
 
             if(neighbours.size() < minPoints){
                 p.setOutlier(true);
@@ -75,30 +73,24 @@ public class DBScan implements ICluster {
         }
     }
 
-    private void expandCluster(Point point, ArrayList<Point> neighbours, Cluster cluster){
+    private void expandCluster(Point point, List<Point> neighbours, Cluster cluster){
         cluster.add(point);
 
-        boolean done = false;
+        for (int i = 0; i < neighbours.size(); i++) {
+            Point other = neighbours.get(i);
 
-        while (!done){
-            for(Point other : neighbours){
-                done=true;
+            if (!other.isVisited()) {
+                other.setVisited(true);
 
-                if (!other.isVisited()){
-                    other.setVisited(true);
+                List<Point> neighboursNeighbours = getNeighbours(other, maxDistance);
 
-                    ArrayList<Point> neighboursNeighbours = getNeighbours(other, maxDistance);
-
-                    if(neighboursNeighbours.size() >= minPoints){
-                        neighbours.addAll(neighboursNeighbours);
-                        done = false;
-                        break;
-                    }
+                if (neighboursNeighbours.size() >= minPoints) {
+                    neighbours.addAll(neighboursNeighbours);
                 }
+            }
 
-                if (!isInCluster(other)){
-                    cluster.add(other);
-                }
+            if (!isInCluster(other)) {
+                cluster.add(other);
             }
         }
     }
@@ -113,11 +105,11 @@ public class DBScan implements ICluster {
         return false;
     }
 
-    private ArrayList<Point> getNeighbours(Point p, double maxDistance){
-        ArrayList<Point> neighbours = new ArrayList<Point>(10);
+    private List<Point> getNeighbours(Point p, double maxDistance){
+        List<Point> neighbours = new ArrayList<>(2048);
 
         for (Point other : data){
-            double distance = p.eukleidDistanceTo(other);
+            double distance = p.euclideanDistanceTo(other);
             if(Double.compare(distance, maxDistance) < 1){
                 neighbours.add(other);
             }

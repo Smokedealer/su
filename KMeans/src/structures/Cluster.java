@@ -1,11 +1,11 @@
 package structures;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by Matěj Kareš on 01.12.2016.
  */
-public class Cluster extends ArrayList<Point> {
+public class Cluster extends HashSet<Point> {
     private static int clusterID = 0;
 
     private int id;
@@ -20,7 +20,7 @@ public class Cluster extends ArrayList<Point> {
     public Point geometricalMiddle(){
         if(isEmpty()) return null;
 
-        int dimension = get(0).getDimension();
+        int dimension = iterator().next().getDimension();
 
         Point center = new Point(dimension);
 
@@ -91,7 +91,7 @@ public class Cluster extends ArrayList<Point> {
         int count = 0;
 
         for(Point p : this){
-            average += Math.pow(centroid.eukleidDistanceTo(p), 2d);
+            average += Math.pow(centroid.euclideanDistanceTo(p), 2d);
             count++;
         }
 
