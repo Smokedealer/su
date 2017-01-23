@@ -40,6 +40,7 @@ public class Point implements Serializable {
     }
 
 
+
     /**
      * Determines the Euler distance between this and given point.
      * N-Dimensional algorithm.
@@ -145,4 +146,5 @@ public class Point implements Serializable {
 
         return match;
     }
+
 }

@@ -107,4 +107,13 @@ public class Cluster extends HashSet<Point> {
     public Point getCentroid() {
         return centroid;
     }
+
+    @Override
+    public String toString() {
+        return "Cluster{" +
+                "id=" + id +
+                ", centroid=" + centroid +
+                '}';
+    }
+
 }

@@ -4,11 +4,13 @@ import structures.Cluster;
 import structures.ICluster;
 import structures.Point;
 import utils.DataGenerator;
-import utils.GUI;
+import utils.GUIForm;
+import utils.GenerateDataListener;
 
-import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 /**
@@ -19,8 +21,19 @@ public class App {
     private static long timeStart;
     private static long timeEnd;
 
+    private GUIForm gui;
+
     public static void main(String[] args) {
 
+        new App(); // controllable GUI
+        //new App(null); // just for testing
+
+    }
+
+    /**
+     * Just for testing! GUI won't work properly.
+     */
+    private App(Object debugmode) {
         Point[] data = loadDataFromFile("data.txt");
 
         if(data == null) {
@@ -35,20 +48,63 @@ public class App {
             }
         }
 
-        startTimer();
+        this.gui = new GUIForm();
         tryKMeans(data);
-        stopTimer();
 
-        startTimer();
+        this.gui = new GUIForm();
         tryDBScan(data);
-        stopTimer();
-
-        //scanInput(km);
     }
 
-    static void tryKMeans(Point[] data) {
+
+    public App() {
+        this.gui = new GUIForm();
+        this.gui.setGenerateDataListener(new GenerateDataListener() {
+
+            Point[] data = null;
+
+            @Override
+            public void uniformData(int dimensions, int points, int spread) {
+                try {
+                    DataGenerator dg = new DataGenerator(dimensions, points, spread);
+                    data = dg.generateData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void clusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
+                try {
+                    DataGenerator dg = new DataGenerator(dimensions, points, spread);
+                    data = dg.generateClusteredData(clustersSpread, clusters);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void fileData(String file) {
+            }
+
+            @Override
+            public void process(int method) {
+                if(this.data == null) return;
+
+                switch(method) {
+                    case 0: tryKMeans(deepCopyOfPoints(this.data)); break;
+                    case 1: tryDBScan(deepCopyOfPoints(this.data)); break;
+                }
+            }
+        });
+    }
+
+    private void tryKMeans(Point[] data) {
+        startTimer();
+
         KMeans km = new KMeans();
         Cluster[] returned = km.doClustering(data, 0, 20);
+
+        stopTimer();
 
         System.out.println("Final Centroid locations");
 
@@ -56,22 +112,22 @@ public class App {
             System.out.println(cluster.getCentroid().toString());
         }
 
-        GUI gui = new GUI();
-        gui.repaint();
         gui.drawData(returned);
     }
 
 
-    static void tryDBScan(Point[] data) {
+    private void tryDBScan(Point[] data) {
+        startTimer();
+
         DBScan dbscan = new DBScan();
         Cluster[] returned = dbscan.doClustering(data, 0, 0);
 
-        GUI gui = new GUI();
-        gui.repaint();
+        stopTimer();
+
         gui.drawData(returned);
     }
 
-    static void saveDataToFile(Point[] data, String file) {
+    private static void saveDataToFile(Point[] data, String file) {
         FileOutputStream fout;
         try {
             fout = new FileOutputStream(file);
@@ -82,7 +138,7 @@ public class App {
         }
     }
 
-    static Point[] loadDataFromFile(String file) {
+    private static Point[] loadDataFromFile(String file) {
         Point[] points = null;
 
         FileInputStream fin;
@@ -98,7 +154,7 @@ public class App {
         return points;
     }
 
-    static void scanInput(ICluster clustering) {
+    private static void scanInput(ICluster clustering) {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -127,5 +183,12 @@ public class App {
         System.out.println("Algorithm took " + (timeEnd - timeStart) + "ms to complete.");
     }
 
+    private static Point[] deepCopyOfPoints(Point[] input) {
+        Point[] output = new Point[input.length];
+        for (int i = 0, length = output.length; i < length; i++) {
+            output[i] = new Point(input[i]);
+        }
+        return output;
+    }
 
 }
