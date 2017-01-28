@@ -7,6 +7,7 @@ import java.awt.*;
 
 /**
  * Created by Matěj Kareš on 02.12.2016.
+ * @deprecated Not used
  */
 public class GUI extends JFrame {
 

@@ -2,7 +2,7 @@ package kmeans;
 
 
 import structures.Cluster;
-import structures.ICluster;
+import structures.ClusteringAlg;
 import structures.Point;
 
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by kares on 30.11.2016.
  */
-public class KMeans implements ICluster {
+public class KMeans implements ClusteringAlg {
 
     public static final int DISTANCE_EUKLEID = 0;
     public static final int DISTANCE_MANHATTAN = 1;
@@ -61,9 +61,6 @@ public class KMeans implements ICluster {
 
 
 
-
-
-
     @Override
     public Cluster[] doClustering(Point[] data, int clusterCount, int nCount) {
 
@@ -75,11 +72,13 @@ public class KMeans implements ICluster {
         this.dimension = data[0].getDimension();
         this.data = data;
 
-        if(clusterCount<1){
+        if(clusterCount < 1){
             isElbowingEnabled = true;
             this.clusterCount = 1;
         }
-        else this.clusterCount = clusterCount;
+        else {
+            this.clusterCount = clusterCount;
+        }
 
         this.lastBiggestAdjustment = Double.MIN_VALUE;
         this.convergenceThreshold = 0.01;

@@ -1,14 +1,13 @@
 package structures;
 
-import structures.Cluster;
-import structures.Point;
-
 /**
  * Created by Matěj Kareš on 01.12.2016.
  */
-public interface ICluster {
+public interface ClusteringAlg {
 
     Cluster[] doClustering(Point[] data, int clusterCount, int nCount);
 
+    // TODO: delete? Přiřazení jednoho bodu ke clusteru nejspíš nemá nic společného se samotnou metodou, jakou se clustery vytvořily, ne?
     Cluster assignToCluster(Point point);
+
 }

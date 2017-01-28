@@ -1,12 +1,13 @@
 import dbscan.DBScan;
 import kmeans.KMeans;
 import structures.Cluster;
-import structures.ICluster;
+import structures.ClusteringAlg;
 import structures.Point;
 import utils.DataGenerator;
+import utils.GUIController;
 import utils.GUIForm;
-import utils.GenerateDataListener;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -39,7 +40,7 @@ public class App {
         if(data == null) {
             try {
                 DataGenerator dg = new DataGenerator(2, 5000, 50);
-                data = dg.generateClusteredData(40, 5);
+                data = dg.generateClusteredData(40, 5).toArray(new Point[0]);
                 //data = dg.generateData();
 
                 saveDataToFile(data, "data.txt");
@@ -56,38 +57,46 @@ public class App {
     }
 
 
-    public App() {
-        this.gui = new GUIForm();
-        this.gui.setGenerateDataListener(new GenerateDataListener() {
+    private App() {
 
-            Point[] data = null;
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception ignored) { }
+
+        this.gui = new GUIForm();
+        this.gui.setGUIController(new GUIController() {
+
+            Cluster data = null;
 
             @Override
-            public void uniformData(int dimensions, int points, int spread) {
+            public void generateUniformData(int dimensions, int points, int spread) {
                 try {
                     DataGenerator dg = new DataGenerator(dimensions, points, spread);
                     data = dg.generateData();
+                    gui.drawData(new Cluster[]{data});
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void clusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
+            public void generateClusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
                 try {
                     DataGenerator dg = new DataGenerator(dimensions, points, spread);
                     data = dg.generateClusteredData(clustersSpread, clusters);
+                    gui.drawData(new Cluster[]{data});
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void fileData(String file) {
+            public void loadFileData(String file) {
+                // todo: loading data from files
             }
 
             @Override
-            public void process(int method) {
+            public void doClustering(int method) {
                 if(this.data == null) return;
 
                 switch(method) {
@@ -154,7 +163,7 @@ public class App {
         return points;
     }
 
-    private static void scanInput(ICluster clustering) {
+    private static void scanInput(ClusteringAlg clustering) {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -183,11 +192,14 @@ public class App {
         System.out.println("Algorithm took " + (timeEnd - timeStart) + "ms to complete.");
     }
 
-    private static Point[] deepCopyOfPoints(Point[] input) {
-        Point[] output = new Point[input.length];
-        for (int i = 0, length = output.length; i < length; i++) {
-            output[i] = new Point(input[i]);
+    private static Point[] deepCopyOfPoints(Cluster cluster) {
+        Point[] output = new Point[cluster.size()];
+        int i = 0;
+
+        for (Point point : cluster) {
+            output[i++] = new Point(point);
         }
+
         return output;
     }
 

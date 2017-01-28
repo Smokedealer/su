@@ -26,17 +26,10 @@ public class GUIForm extends JFrame {
     private JPanel previewPanel;
     private JComboBox methodComboBox;
     private JButton processButton;
+    private JSpinner udDimensionSpinner;
 
     private ClusteringCanvas clusteringCanvas;
-    private GenerateDataListener generateDataListener;
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception ignored) { }
-        new GUIForm();
-
-    }
+    private utils.GUIController GUIController;
 
 
     public GUIForm() {
@@ -52,11 +45,14 @@ public class GUIForm extends JFrame {
         this.previewPanel.add(this.clusteringCanvas);
 
         this.cdDimensionSpinner.setValue(2);
-        this.cdPointsCountSpinner.setValue(300);
-        this.cdPointsSpreadSpinner.setValue(30);
+        this.cdPointsCountSpinner.setValue(1000);
+        this.cdPointsSpreadSpinner.setValue(5);
         this.cdClustersCountSpinner.setValue(3);
-        this.cdClustersSpreadSpinner.setValue(30);
+        this.cdClustersSpreadSpinner.setValue(50);
 
+        this.udDimensionSpinner.setValue(2);
+        this.udPointsCountSpinner.setValue(1000);
+        this.udPointsSpreadSpinner.setValue(5);
 
         // data source
         this.uniformDataPanel.setVisible(false);
@@ -95,12 +91,23 @@ public class GUIForm extends JFrame {
 
 
         this.generateButton.addActionListener(e -> {
-            GenerateDataListener gdl = this.generateDataListener;
+            utils.GUIController gdl = this.GUIController;
 
             switch (this.dataComboBox.getSelectedIndex()) {
 
+                case 1:
+                    gdl.generateUniformData(
+                            (int) this.udDimensionSpinner.getValue(),
+                            (int) this.udPointsCountSpinner.getValue(),
+                            (int) this.udPointsSpreadSpinner.getValue());
+                    break;
+
+                case 2:
+                    gdl.loadFileData(this.fdFileField.getText());
+                    break;
+
                 default:
-                    gdl.clusteredData(
+                    gdl.generateClusteredData(
                             (int) this.cdDimensionSpinner.getValue(),
                             (int) this.cdPointsCountSpinner.getValue(),
                             (int) this.cdPointsSpreadSpinner.getValue(),
@@ -112,9 +119,7 @@ public class GUIForm extends JFrame {
         });
 
         processButton.addActionListener(e -> {
-            this.generateDataListener.process(this.methodComboBox.getSelectedIndex());
-
-
+            this.GUIController.doClustering(this.methodComboBox.getSelectedIndex());
         });
     }
 
@@ -123,8 +128,8 @@ public class GUIForm extends JFrame {
         this.repaint();
     }
 
-    public void setGenerateDataListener(GenerateDataListener generateDataListener) {
-        this.generateDataListener = generateDataListener;
+    public void setGUIController(utils.GUIController GUIController) {
+        this.GUIController = GUIController;
     }
 
 }

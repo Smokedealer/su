@@ -6,11 +6,11 @@ import java.util.HashSet;
  * Created by Matěj Kareš on 01.12.2016.
  */
 public class Cluster extends HashSet<Point> {
+
     private static int clusterID = 0;
-
     private int id;
-
-    Point centroid;
+    private Point centroid;
+    private boolean shadowCluster = false; // shadow clusters = before clustering or outliers (points excluded from all other clusters)
 
     public Cluster(){
         super();
@@ -44,10 +44,12 @@ public class Cluster extends HashSet<Point> {
     }
 
 
+    /**
+     * Gets data bounding rectangle (ie. limited to 2D).
+     * @return
+     */
     public double[] getBounds(){
-
         double[] bounds = new double[4];
-
         double maxX = -Double.MAX_VALUE;
         double minX = Double.MAX_VALUE;
         double maxY = -Double.MAX_VALUE;
@@ -107,6 +109,15 @@ public class Cluster extends HashSet<Point> {
     public Point getCentroid() {
         return centroid;
     }
+
+    public boolean isShadowCluster() {
+        return shadowCluster;
+    }
+
+    public void setShadowCluster(boolean shadowCluster) {
+        this.shadowCluster = shadowCluster;
+    }
+
 
     @Override
     public String toString() {

@@ -1,7 +1,7 @@
 package dbscan;
 
 import structures.Cluster;
-import structures.ICluster;
+import structures.ClusteringAlg;
 import structures.Point;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Matěj Kareš on 17.01.2017.
  */
-public class DBScan implements ICluster {
+public class DBScan implements ClusteringAlg {
 
     /** Minimum points to count as a cluster */
     private int minPoints = 20;
@@ -47,7 +47,9 @@ public class DBScan implements ICluster {
         //clusterCount is not used, DBScan determines cluster count by itself
         clusters = new ArrayList<>();
 
-        start();
+        this.start();
+
+        this.addOutliersCluster();
 
         return clusters.toArray(new Cluster[0]);
     }
@@ -69,13 +71,13 @@ public class DBScan implements ICluster {
                 clusters.add(cluster);
                 expandCluster(p, neighbours, cluster);
             }
-
         }
     }
 
     private void expandCluster(Point point, List<Point> neighbours, Cluster cluster){
         cluster.add(point);
 
+        // check all neighbours (if unvisited then also their neighbours), add to cluster
         for (int i = 0; i < neighbours.size(); i++) {
             Point other = neighbours.get(i);
 
@@ -96,7 +98,7 @@ public class DBScan implements ICluster {
     }
 
     private boolean isInCluster(Point p){
-        if(clusters.isEmpty())  return false;
+        //if(clusters.isEmpty()) return false; // unnecessary, clusters.add() is called before this
 
         for(Cluster c : clusters){
             if(c.contains(p)) return true;
@@ -116,6 +118,24 @@ public class DBScan implements ICluster {
         }
 
         return neighbours;
+    }
+
+
+    /**
+     * Creates a new "shadow" cluster just for outliers.
+     */
+    private void addOutliersCluster() {
+        Cluster outliers = new Cluster();
+        outliers.setShadowCluster(true);
+
+        for(Point p : data){
+            if(!p.isOutlier()) continue;
+
+            outliers.add(p);
+        }
+
+        if(!outliers.isEmpty())
+            this.clusters.add(outliers);
     }
 
 

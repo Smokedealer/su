@@ -32,7 +32,6 @@ public class ClusteringCanvas extends JPanel {
         double minY = Double.MAX_VALUE;
 
         for(Cluster cluster : clusters){
-
             double[] localBounds = cluster.getBounds();
             if(localBounds == null) return;
 
@@ -59,7 +58,6 @@ public class ClusteringCanvas extends JPanel {
 
         double scaleX = image.getWidth() / (globalBounds[0] - globalBounds[1]);
         double scaleY = image.getHeight() / (globalBounds[2] - globalBounds[3]);
-
 
         drawGuideLines(g2, globalBounds, scaleX, scaleY);
         drawClusters(g2, clusters, globalBounds, scaleX, scaleY);
@@ -91,7 +89,6 @@ public class ClusteringCanvas extends JPanel {
 
             for(structures.Point point : cluster){
                 int x = (int)((point.getCoordinates()[0] - globalBounds[1]) * scaleX);
-
                 int y;
 
                 if(point.getDimension() > 1){
@@ -101,19 +98,28 @@ public class ClusteringCanvas extends JPanel {
                     y = image.getHeight() / 2;
                 }
 
-                g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.85f));
+                if(cluster.isShadowCluster())
+                    g2.setColor(Color.GRAY);
+                else
+                    g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.85f));
+
                 g2.fillRect(x-1, y-1, 3,3);
 
 
+                if(cluster.isShadowCluster())
+                    continue;
+
+
                 /*
-                //Underpainting (too resource heavy)
+                // Underpainting (resource heavy)
                 Color color = Color.getHSBColor(i * (1f / clusters.length), 1f, 0.85f);
                 g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 5));
-
                 g2.fillOval(x-15, y-15 , 30, 30);
                 */
 
+                // outline
                 g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.6f));
+
                 g2.drawRect(x-2, y-2, 4,4);
             }
 
