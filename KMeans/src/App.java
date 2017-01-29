@@ -1,7 +1,10 @@
 import dbscan.DBScan;
+import dbscan.DBScanConf;
 import kmeans.KMeans;
+import kmeans.KMeansConf;
 import structures.Cluster;
 import structures.ClusteringAlg;
+import structures.ClusteringAlgConf;
 import structures.Point;
 import utils.DataGenerator;
 import utils.GUIController;
@@ -50,10 +53,10 @@ public class App {
         }
 
         this.gui = new GUIForm();
-        tryKMeans(data);
+        tryKMeans(data, new KMeansConf());
 
         this.gui = new GUIForm();
-        tryDBScan(data);
+        tryDBScan(data, new DBScanConf());
     }
 
 
@@ -63,55 +66,58 @@ public class App {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception ignored) { }
 
-        this.gui = new GUIForm();
-        this.gui.setGUIController(new GUIController() {
+        SwingUtilities.invokeLater(()->{
+            this.gui = new GUIForm();
+            this.gui.setGUIController(new GUIController() {
 
-            Cluster data = null;
+                Cluster data = null;
 
-            @Override
-            public void generateUniformData(int dimensions, int points, int spread) {
-                try {
-                    DataGenerator dg = new DataGenerator(dimensions, points, spread);
-                    data = dg.generateData();
-                    gui.drawData(new Cluster[]{data});
-                } catch (Exception e) {
-                    e.printStackTrace();
+                @Override
+                public void generateUniformData(int dimensions, int points, int spread) {
+                    try {
+                        DataGenerator dg = new DataGenerator(dimensions, points, spread);
+                        data = dg.generateData();
+                        gui.drawData(new Cluster[]{data});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void generateClusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
-                try {
-                    DataGenerator dg = new DataGenerator(dimensions, points, spread);
-                    data = dg.generateClusteredData(clustersSpread, clusters);
-                    gui.drawData(new Cluster[]{data});
-                } catch (Exception e) {
-                    e.printStackTrace();
+                @Override
+                public void generateClusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
+                    try {
+                        DataGenerator dg = new DataGenerator(dimensions, points, spread);
+                        data = dg.generateClusteredData(clustersSpread, clusters);
+                        gui.drawData(new Cluster[]{data});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void loadFileData(String file) {
-                // todo: loading data from files
-            }
-
-            @Override
-            public void doClustering(int method) {
-                if(this.data == null) return;
-
-                switch(method) {
-                    case 0: tryKMeans(deepCopyOfPoints(this.data)); break;
-                    case 1: tryDBScan(deepCopyOfPoints(this.data)); break;
+                @Override
+                public void loadFileData(String file) {
+                    // todo: loading data from files
                 }
-            }
+
+                @Override
+                public void doClustering(int method, ClusteringAlgConf conf) {
+                    if(this.data == null) return;
+
+                    switch(method) {
+                        case 0: tryKMeans(deepCopyOfPoints(this.data), conf); break;
+                        case 1: tryDBScan(deepCopyOfPoints(this.data), conf); break;
+                    }
+                }
+            });
         });
+
     }
 
-    private void tryKMeans(Point[] data) {
+    private void tryKMeans(Point[] data, ClusteringAlgConf conf) {
         startTimer();
 
         KMeans km = new KMeans();
-        Cluster[] returned = km.doClustering(data, 0, 20);
+        Cluster[] returned = km.doClustering(data, conf);
 
         stopTimer();
 
@@ -125,11 +131,11 @@ public class App {
     }
 
 
-    private void tryDBScan(Point[] data) {
+    private void tryDBScan(Point[] data, ClusteringAlgConf conf) {
         startTimer();
 
         DBScan dbscan = new DBScan();
-        Cluster[] returned = dbscan.doClustering(data, 0, 0);
+        Cluster[] returned = dbscan.doClustering(data, conf);
 
         stopTimer();
 

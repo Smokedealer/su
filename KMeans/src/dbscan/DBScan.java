@@ -2,6 +2,7 @@ package dbscan;
 
 import structures.Cluster;
 import structures.ClusteringAlg;
+import structures.ClusteringAlgConf;
 import structures.Point;
 
 import java.util.ArrayList;
@@ -36,10 +37,13 @@ public class DBScan implements ClusteringAlg {
 
 
     @Override
-    public Cluster[] doClustering(Point[] data, int clusterCount, int nCount) {
-
+    public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
         //Wrong data
-        if(data == null || data.length == 0) return null;
+        if(data == null || data.length == 0 || !(conf instanceof DBScanConf)) return null;
+
+        DBScanConf dbScanConf = (DBScanConf) conf;
+        this.minPoints = dbScanConf.getMinPoints();
+        this.maxDistance = dbScanConf.getMaxDistance();
 
         System.out.println("Starting DBScan.");
 

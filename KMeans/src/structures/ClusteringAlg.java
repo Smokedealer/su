@@ -5,7 +5,7 @@ package structures;
  */
 public interface ClusteringAlg {
 
-    Cluster[] doClustering(Point[] data, int clusterCount, int nCount);
+    Cluster[] doClustering(Point[] data, ClusteringAlgConf conf);
 
     // TODO: delete? Přiřazení jednoho bodu ke clusteru nejspíš nemá nic společného se samotnou metodou, jakou se clustery vytvořily, ne?
     Cluster assignToCluster(Point point);

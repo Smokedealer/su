@@ -1,4 +1,6 @@
 package utils;
+import structures.ClusteringAlgConf;
+
 
 public interface GUIController {
 
@@ -6,6 +8,6 @@ public interface GUIController {
     void generateClusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread);
     void loadFileData(String file);
 
-    void doClustering(int method);
+    void doClustering(int method, ClusteringAlgConf conf);
 
 }

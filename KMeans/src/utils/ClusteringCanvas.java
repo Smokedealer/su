@@ -101,7 +101,7 @@ public class ClusteringCanvas extends JPanel {
                 if(cluster.isShadowCluster())
                     g2.setColor(Color.GRAY);
                 else
-                    g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.85f));
+                    g2.setColor(Color.getHSBColor(i*(1f/clusters.length), 1f, 0.88f));
 
                 g2.fillRect(x-1, y-1, 3,3);
 
@@ -130,9 +130,6 @@ public class ClusteringCanvas extends JPanel {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-
-        System.out.println(this.getWidth());
-
         g2.drawImage(image, 1, 1, this.getWidth() - 2, this.getHeight() - 2, null);
     }
 }

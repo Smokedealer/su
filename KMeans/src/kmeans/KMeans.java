@@ -3,6 +3,7 @@ package kmeans;
 
 import structures.Cluster;
 import structures.ClusteringAlg;
+import structures.ClusteringAlgConf;
 import structures.Point;
 
 import java.util.*;
@@ -16,12 +17,8 @@ public class KMeans implements ClusteringAlg {
     public static final int DISTANCE_MANHATTAN = 1;
 
 
-
     /** Method used for determining distances of points **/
     private int distanceMethod;
-
-    /** Dimension the K-Means is dealing with **/
-    private int dimension;
 
     /** Array of centroids **/
     private Point[] centroids;
@@ -62,15 +59,18 @@ public class KMeans implements ClusteringAlg {
 
 
     @Override
-    public Cluster[] doClustering(Point[] data, int clusterCount, int nCount) {
+    public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
 
         //Wrong data
-        if(data == null || data.length == 0 || nCount <= 0) return null;
+        if(data == null || data.length == 0 || !(conf instanceof KMeansConf)) return null;
+
+        KMeansConf kMeansConf = (KMeansConf) conf;
+        int clusterCount = kMeansConf.getClusterCount();
+        int algRepeats = kMeansConf.getAlgRepeats();
+        this.elbowDifferenceTrigger = kMeansConf.getElbowTriggerValue();
 
         System.out.println("Starting K-Means.");
 
-        this.dimension = data[0].getDimension();
-        this.data = data;
 
         if(clusterCount < 1){
             isElbowingEnabled = true;
@@ -80,6 +80,7 @@ public class KMeans implements ClusteringAlg {
             this.clusterCount = clusterCount;
         }
 
+        this.data = data;
         this.lastBiggestAdjustment = Double.MIN_VALUE;
         this.convergenceThreshold = 0.01;
         this.maxIterations = 1000;
@@ -98,14 +99,16 @@ public class KMeans implements ClusteringAlg {
 
                 if(iteration > maxElbowIterations){
                     System.out.println("Exceeded maximum iterations for elbow method.");
-                    return null;
+                    return previousResult;
                 }
 
                 this.results = new TreeMap<>();
 
-                for (int i = 0; i < nCount; i++){
+                // repeat multiple times with different random points to get best results
+                for (int i = 0; i < algRepeats; i++){
                     System.out.println("Restarting algorithm. Round " + i + ".");
-                    start();
+                    start(); // select n random points and do the whole clusters adjusting (in a loop until convergence is low)
+                    if(this.clusterCount == 1) break;
                 }
 
                 if(!doElbowing()) return previousResult;
@@ -114,9 +117,10 @@ public class KMeans implements ClusteringAlg {
 
                 this.clusterCount++;
             }
-        }else{
 
-            for (int i = 0; i < nCount; i++){
+        } else {
+
+            for (int i = 0; i < algRepeats; i++){
                 System.out.println("Restarting algorithm. Round " + i + ".");
                 start();
             }
@@ -139,7 +143,7 @@ public class KMeans implements ClusteringAlg {
         do{
             assignCentroids();
             adjustCentroids();
-            System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
+            //System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
         }while (!convergenceIsLow(++iteration));
 
         double jValue = jFunction();
@@ -149,8 +153,9 @@ public class KMeans implements ClusteringAlg {
             System.out.println(centroid.toString());
         }*/
 
-        results.put(jValue, clusters);
+        System.out.println("jValue: " + jValue);
 
+        results.put(jValue, clusters);
     }
 
     /**
@@ -169,7 +174,7 @@ public class KMeans implements ClusteringAlg {
         }
 
         double last = elbowValues.get(elbowValues.size() - 1);
-        double lastButOne= elbowValues.get(elbowValues.size() - 2);
+        double lastButOne = elbowValues.get(elbowValues.size() - 2);
 
         double difference = lastButOne - last;
 
@@ -318,20 +323,16 @@ public class KMeans implements ClusteringAlg {
 
     public double getDistance(Point a, Point b){
 
-        double distance = 0;
+        double distance;
 
         switch (distanceMethod){
+            default:
             case DISTANCE_EUKLEID:
                 distance = a.euclideanDistanceTo(b);
                 break;
 
             case DISTANCE_MANHATTAN:
                 distance = a.manhattanDistanceTo(b);
-                break;
-
-
-            default:
-                distance = a.euclideanDistanceTo(b);
                 break;
         }
 
