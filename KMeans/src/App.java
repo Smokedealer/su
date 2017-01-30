@@ -9,6 +9,7 @@ import structures.Point;
 import utils.DataGenerator;
 import utils.GUIController;
 import utils.GUIForm;
+import utils.InputDataParser;
 
 import javax.swing.*;
 import java.io.FileInputStream;
@@ -96,7 +97,15 @@ public class App {
 
                 @Override
                 public void loadFileData(String file) {
-                    // todo: loading data from files
+                    InputDataParser parser = new InputDataParser();
+
+                    this.data = parser.readFile(file);
+
+                    if(data == null || data.isEmpty()){
+                        JOptionPane.showMessageDialog(App.this.gui, "File \"" + file + "\" could not be read.");
+                    }else {
+                        App.this.gui.drawData(new Cluster[]{this.data});
+                    }
                 }
 
                 @Override
