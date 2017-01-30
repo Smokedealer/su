@@ -113,14 +113,24 @@ public class App {
                 public void doClustering(int method, ClusteringAlgConf conf) {
                     if (this.data == null) return;
 
+                    ClusteringAlg alg;
+
                     switch (method) {
+                        default:
                         case 0:
-                            tryKMeans(deepCopyOfPoints(this.data), conf);
+                            alg = new KMeans();
+                            //alg = new EM();
                             break;
                         case 1:
-                            tryDBScan(deepCopyOfPoints(this.data), conf);
+                            alg = new DBScan();
                             break;
                     }
+
+                    startTimer();
+                    Cluster[] clusters = alg.doClustering(deepCopyOfPoints(this.data), conf);
+                    stopTimer();
+
+                    App.this.gui.drawData(clusters);
                 }
             });
         });

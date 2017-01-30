@@ -7,14 +7,18 @@ import java.util.Arrays;
  * Created by Matěj Kareš on 30.11.2016.
  */
 public class Point implements Serializable {
-    static int pointID = 0;
+    private static int pointID = 0;
 
-    int id;
+    private int id;
 
-    /** Dimension of the point. 1D, 2D, 3D, 4D, etc. */
+    /**
+     * Dimension of the point. 1D, 2D, 3D, 4D, etc.
+     */
     private int dimension;
 
-    /** Coordinates of this point in it's dimension. */
+    /**
+     * Coordinates of this point in it's dimension.
+     */
     private double[] coordinates;
 
     private boolean visited;
@@ -23,7 +27,7 @@ public class Point implements Serializable {
 
     public Point(int dimension, double[] coordinates) {
         this.dimension = dimension;
-        this.coordinates = coordinates;
+        this.coordinates = Arrays.copyOf(coordinates, coordinates.length);
         this.id = pointID++;
     }
 
@@ -40,7 +44,6 @@ public class Point implements Serializable {
     }
 
 
-
     /**
      * Determines the Euler distance between this and given point.
      * N-Dimensional algorithm.
@@ -48,13 +51,13 @@ public class Point implements Serializable {
      * @param point - target point
      * @return double - distance between said points
      */
-    public double euclideanDistanceTo(Point point){
+    public double euclideanDistanceTo(Point point) {
         double zeroedDim; // for each dimension we need their zeroed distance (point acts as base)
         double sumOfPartialDistances = 0;
 
-        for(int i = 0; i < dimension; i++){
+        for (int i = 0; i < this.dimension; i++) {
             //Transpose to the base (zero)
-            zeroedDim = coordinates[i] - point.coordinates[i];
+            zeroedDim = this.coordinates[i] - point.coordinates[i];
 
             //Square distance
             sumOfPartialDistances += zeroedDim * zeroedDim;
@@ -72,11 +75,11 @@ public class Point implements Serializable {
      * @param point - target point
      * @return double - distance between said points
      */
-    public double manhattanDistanceTo(Point point){
+    public double manhattanDistanceTo(Point point) {
         //We need to sum all the distances through all dimensions.
         double sumOfPartialDistances = 0;
 
-        for(int i = 0; i < dimension; i++){
+        for (int i = 0; i < this.dimension; i++) {
             sumOfPartialDistances += Math.abs(this.coordinates[i] - point.coordinates[i]);
         }
 
@@ -84,14 +87,19 @@ public class Point implements Serializable {
     }
 
 
+    public double normalDistribution(Point point, double deviation) {
+        double distance = this.euclideanDistanceTo(point);
+        return Math.exp(-(distance * distance) / (2 * deviation * deviation));
+    }
 
-    public void moveTo(Point to){
+
+    public void moveTo(Point to) {
         this.coordinates = to.coordinates;
     }
 
 
     public int getDimension() {
-        return dimension;
+        return this.dimension;
     }
 
     public void setDimension(int dimension) {
@@ -99,23 +107,23 @@ public class Point implements Serializable {
     }
 
     public double[] getCoordinates() {
-        return coordinates;
+        return this.coordinates;
     }
 
     public void setCoordinates(double[] coordinates) {
         this.coordinates = coordinates;
     }
 
-    public double getSpecificCoord(int dimension){
-        return coordinates[dimension];
+    public double getSpecificCoord(int dimension) {
+        return this.coordinates[dimension];
     }
 
-    public void setSpecificCoord(int dimension, double value){
-        coordinates[dimension] = value;
+    public void setSpecificCoord(int dimension, double value) {
+        this.coordinates[dimension] = value;
     }
 
     public boolean isVisited() {
-        return visited;
+        return this.visited;
     }
 
     public void setVisited(boolean visited) {
@@ -123,7 +131,7 @@ public class Point implements Serializable {
     }
 
     public boolean isOutlier() {
-        return outlier;
+        return this.outlier;
     }
 
     public void setOutlier(boolean outlier) {
@@ -132,19 +140,17 @@ public class Point implements Serializable {
 
     @Override
     public String toString() {
-        return "Point " + id + " {" + Arrays.toString(coordinates) + '}';
+        return "Point " + this.id + " {" + Arrays.toString(this.coordinates) + '}';
     }
 
     public boolean equals(Point other) {
-        boolean match = true;
-
-        for(int i = 0; i < dimension; i++){
-            if(coordinates[i] != other.coordinates[i]){
+        for (int i = 0; i < this.dimension; i++) {
+            if (this.coordinates[i] != other.coordinates[i]) {
                 return false;
             }
         }
 
-        return match;
+        return true;
     }
 
 }

@@ -1,5 +1,6 @@
 package structures;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -17,10 +18,15 @@ public class Cluster extends HashSet<Point> {
         this.id = clusterID++;
     }
 
-    public Point geometricalMiddle(){
-        if(isEmpty()) return null;
+    public Cluster(Point[] data){
+        this();
+        this.addAll(Arrays.asList(data));
+    }
 
-        int dimension = iterator().next().getDimension();
+    public Point geometricalMiddle(){
+        if(this.isEmpty()) return null;
+
+        int dimension = this.iterator().next().getDimension();
 
         Point center = new Point(dimension);
 
@@ -28,10 +34,10 @@ public class Cluster extends HashSet<Point> {
             double coordinateSum = 0;
 
             for(Point p : this){
-                coordinateSum += p.getCoordinates()[i];
+                coordinateSum += p.getSpecificCoord(i);
             }
 
-            coordinateSum /= size();
+            coordinateSum /= this.size();
 
             center.setSpecificCoord(i, coordinateSum);
         }
@@ -131,7 +137,7 @@ public class Cluster extends HashSet<Point> {
         double sse = 0;
 
         for(Point p : this){
-            sse += Math.pow(this.centroid.euclideanDistanceTo(p), 2d);
+            sse += Math.pow(this.geometricalMiddle().euclideanDistanceTo(p), 2d);
         }
 
         return sse;
