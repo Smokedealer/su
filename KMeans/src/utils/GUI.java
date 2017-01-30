@@ -23,7 +23,7 @@ public class GUI extends JFrame {
     }
 
     public void drawData(Cluster[] clusters){
-        mainPanel.drawData(clusters);
+        mainPanel.setData(clusters);
     }
 
     public ClusteringCanvas getMainPanel() {

@@ -6,7 +6,7 @@
       <xy x="20" y="20" width="865" height="867"/>
     </constraints>
     <properties>
-      <preferredSize width="900" height="500"/>
+      <preferredSize width="1000" height="600"/>
     </properties>
     <border type="none"/>
     <children>
@@ -22,7 +22,7 @@
         </border>
         <children/>
       </grid>
-      <grid id="e8620" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="e8620" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
@@ -303,7 +303,7 @@
                   </component>
                 </children>
               </grid>
-              <grid id="d1235" binding="kmeansPanel" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="d1235" binding="kmeansPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -347,19 +347,36 @@
                   </component>
                   <component id="884cd" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="Elbow, práh rozdílu"/>
-                      <toolTipText value="Pokud je ohodnocení dvou po sobě jdoucích iterací menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
+                      <toolTipText value="Pokud je rozdíl ohodnocení dvou po sobě jdoucích iterací menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
                     </properties>
                   </component>
-                  <component id="abf1e" class="javax.swing.JSpinner" binding="kmeansElbowTriggerSpinner">
+                  <component id="abf1e" class="javax.swing.JSpinner" binding="kmeansElbowAbsThresholdSpinner">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <toolTipText value="Pokud je rozdíl ohodnocení dvou po sobě jdoucích iterací menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
+                    </properties>
+                  </component>
+                  <component id="e694c" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Elbow, práh zpomalení"/>
+                      <toolTipText value="Pokud je podíl ohodnocení dvou po sobě jdoucích iterací (neboli zpomalení) menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
+                    </properties>
+                  </component>
+                  <component id="2d2f2" class="javax.swing.JSpinner" binding="kmeansElbowDroprateThresholdSpinner">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText value="Pokud je ohodnocení dvou po sobě jdoucích iterací menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
+                      <toolTipText value="Pokud je podíl ohodnocení dvou po sobě jdoucích iterací (neboli zpomalení) menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
                     </properties>
                   </component>
                 </children>
@@ -431,11 +448,42 @@
               </grid>
             </children>
           </grid>
-          <vspacer id="54bc2">
+          <vspacer id="1319b">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
+          <grid id="86938" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="1" left="1" bottom="1" right="2"/>
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="80a28" class="javax.swing.JButton" binding="exportgraphButton">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Exportovat graf"/>
+                </properties>
+              </component>
+              <hspacer id="ef7c9">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <component id="14c9d" class="javax.swing.JButton" binding="exportdataButton">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Exportovat data"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </grid>
     </children>

@@ -50,11 +50,11 @@ public class KMeans implements ClusteringAlg {
 
     private boolean isElbowingEnabled = false;
 
-    private double elbowDifference;
+    private double elbowDifferenceAbsThreshold;
+
+    private double elbowDroprateThreshold = 0.8d;
 
     private int maxElbowIterations = 15;
-
-    private double elbowDifferenceTrigger = 0.15;
 
 
 
@@ -67,13 +67,14 @@ public class KMeans implements ClusteringAlg {
         KMeansConf kMeansConf = (KMeansConf) conf;
         int clusterCount = kMeansConf.getClusterCount();
         int algRepeats = kMeansConf.getAlgRepeats();
-        this.elbowDifferenceTrigger = kMeansConf.getElbowTriggerValue();
+        this.elbowDroprateThreshold = kMeansConf.getElbowDroprateThresholdValue();
+        this.elbowDifferenceAbsThreshold = kMeansConf.getElbowDifferenceAbsThresholdValue();
 
         System.out.println("Starting K-Means.");
 
 
         if(clusterCount < 1){
-            isElbowingEnabled = true;
+            this.isElbowingEnabled = true;
             this.clusterCount = 1;
         }
         else {
@@ -86,9 +87,9 @@ public class KMeans implements ClusteringAlg {
         this.maxIterations = 1000;
         this.results = new TreeMap<>();
 
-        if(isElbowingEnabled){
+        if(this.isElbowingEnabled){
 
-            elbowValues = new ArrayList<>();
+            this.elbowValues = new ArrayList<>();
 
             int iteration = 0;
 
@@ -97,65 +98,68 @@ public class KMeans implements ClusteringAlg {
 
                 System.out.println("\nStarting elbow iteration " + iteration + ".");
 
-                if(iteration > maxElbowIterations){
+                if(iteration > this.maxElbowIterations){
                     System.out.println("Exceeded maximum iterations for elbow method.");
-                    return previousResult;
+                    return this.previousResult;
+                }
+                if(this.clusterCount > this.data.length){
+                    System.out.println("Not enough data for more clusters.");
+                    return this.previousResult;
                 }
 
                 this.results = new TreeMap<>();
 
                 // repeat multiple times with different random points to get best results
                 for (int i = 0; i < algRepeats; i++){
-                    System.out.println("Restarting algorithm. Round " + i + ".");
-                    start(); // select n random points and do the whole clusters adjusting (in a loop until convergence is low)
+                    //System.out.println("Restarting algorithm. Round " + i + ".");
+                    this.start(); // select n random points and do the whole clusters adjusting (in a loop until convergence is low)
                     if(this.clusterCount == 1) break;
                 }
 
-                if(!doElbowing()) return previousResult;
+                if(!this.doElbowing()) return this.previousResult;
 
-                previousResult = results.get(results.firstKey());
-
+                this.previousResult = this.results.get(this.results.firstKey());
                 this.clusterCount++;
             }
 
         } else {
 
             for (int i = 0; i < algRepeats; i++){
-                System.out.println("Restarting algorithm. Round " + i + ".");
-                start();
+                //System.out.println("Restarting algorithm. Round " + i + ".");
+                this.start();
             }
 
         }
 
 
-        return results.get(results.firstKey());
+        return this.results.get(this.results.firstKey());
     }
 
 
     private void start(){
-        centroids = new Point[clusterCount];
-        clusters = new Cluster[clusterCount];
+        this.centroids = new Point[this.clusterCount];
+        this.clusters = new Cluster[this.clusterCount];
 
-        initCentroids();
+        this.initCentroids();
 
         int iteration = 0;
 
-        do{
-            assignCentroids();
-            adjustCentroids();
+        do {
+            this.assignCentroids();
+            this.adjustCentroids();
             //System.out.println("Iteration " + iteration + ", Convergence: " + lastBiggestAdjustment);
-        }while (!convergenceIsLow(++iteration));
+        } while (!this.convergenceIsLow(++iteration));
 
-        double jValue = jFunction();
+        double jValue = this.jFunction();
 
         /*
         for(Point centroid : centroids){
             System.out.println(centroid.toString());
         }*/
 
-        System.out.println("jValue: " + jValue);
+        //System.out.println("jValue: " + jValue);
 
-        results.put(jValue, clusters);
+        this.results.put(jValue, this.clusters);
     }
 
     /**
@@ -166,25 +170,37 @@ public class KMeans implements ClusteringAlg {
     private boolean doElbowing(){
         boolean result = true;
 
-        elbowValues.add(results.firstKey());
+        this.elbowValues.add(this.results.firstKey());
 
-        if(elbowValues.size() == 1){
-            elbowDifference = 0;
+        if(this.elbowValues.size() == 1){
+            //this.elbowPrevDropRate = 0;
             return true;
         }
 
-        double last = elbowValues.get(elbowValues.size() - 1);
-        double lastButOne = elbowValues.get(elbowValues.size() - 2);
-
+        double last = this.elbowValues.get(this.elbowValues.size() - 1);
+        double lastButOne = this.elbowValues.get(this.elbowValues.size() - 2);
         double difference = lastButOne - last;
+        double dropRate = lastButOne / last - 1;
 
-        //System.out.println("Base difference: " + elbowDifference + ", Difference: " + difference );
+        System.out.println("Last two difference: " + lastButOne + " - " + last + " = " + difference + ", drop rate: " + dropRate);
 
-        if(elbowDifference * elbowDifferenceTrigger > difference || (difference > elbowDifference && elbowDifference > 0.0)){
+        // if current difference is larger than previous difference
+        if(last > lastButOne) {
             result = false;
+            System.out.println("Stop elbowing, difference got larger");
         }
-        elbowDifference = difference;
+        // check for differences using
+        if(dropRate > 0 && dropRate < this.elbowDroprateThreshold){
+            result = false;
+            System.out.println("Stop elbowing, droprate below threshold");
+        }
+        // check for elbow using absolute difference value
+        if(difference < this.elbowDifferenceAbsThreshold && this.elbowDifferenceAbsThreshold > 0){
+            result = false;
+            System.out.println("Stop elbowing, difference below threshold");
+        }
 
+        //this.elbowPrevDropRate = dropRate;
 
         return result;
     }
@@ -198,7 +214,7 @@ public class KMeans implements ClusteringAlg {
     private boolean convergenceIsLow(int iteration){
         boolean result = false;
 
-        if(lastBiggestAdjustment <= convergenceThreshold || iteration > maxIterations) result = true;
+        if(this.lastBiggestAdjustment <= this.convergenceThreshold || iteration > this.maxIterations) result = true;
 
         return result;
     }
@@ -213,13 +229,12 @@ public class KMeans implements ClusteringAlg {
         double average = 0;
         int count = 0;
 
-        for (Cluster cluster : clusters){
+        for (Cluster cluster : this.clusters){
             average += cluster.average();
             count++;
         }
 
         average /= count;
-
         //System.out.println("Function J: " + average);
 
         return average;
@@ -231,44 +246,44 @@ public class KMeans implements ClusteringAlg {
      * Initializes centroids at locations of the few first data points.
      */
     private void initCentroids(){
-        ArrayList<Integer> startingPoints = new ArrayList<Integer>(clusterCount);
+        ArrayList<Integer> startingPoints = new ArrayList<Integer>(this.clusterCount);
         Random rng = new Random();
 
         //Assign each centroid to cluster
-        for(int i = 0; i < clusterCount; i++){
-            clusters[i] = new Cluster();
+        for(int i = 0; i < this.clusterCount; i++){
+            this.clusters[i] = new Cluster();
 
-            int randomIndex = 0;
+            int randomIndex;
 
             //Find starting point that hasn't been used yet.
             do {
-                randomIndex = rng.nextInt(data.length);
-            }while (startingPoints.contains(randomIndex));
+                randomIndex = rng.nextInt(this.data.length);
+            } while (startingPoints.contains(randomIndex));
 
             startingPoints.add(randomIndex);
 
-            centroids[i] = new Point(data[randomIndex]);
+            this.centroids[i] = new Point(this.data[randomIndex]);
         }
     }
 
 
     private void assignCentroids(){
         //Clear all
-        for(Cluster cluster : clusters){
+        for(Cluster cluster : this.clusters){
             cluster.clear();
         }
 
-        for(Point point : data){
+        for(Point point : this.data){
             //Get the closest centroid
-            int closestCentroidIndex = getClosestCentroid(point);
+            int closestCentroidIndex = this.getClosestCentroid(point);
 
-            Cluster cluster = clusters[closestCentroidIndex];
+            Cluster cluster = this.clusters[closestCentroidIndex];
 
             //Add point to the cluster
             cluster.add(point);
 
             //Give the cluster reference to it's centroid
-            cluster.setCentroid(centroids[closestCentroidIndex]);
+            cluster.setCentroid(this.centroids[closestCentroidIndex]);
         }
     }
 
@@ -276,27 +291,27 @@ public class KMeans implements ClusteringAlg {
 
     private void adjustCentroids(){
         double iterBiggestAdjustment = 0;
-        lastBiggestAdjustment = 0;
+        this.lastBiggestAdjustment = 0;
 
-        for(int i = 0; i < clusters.length; i++){
+        for(int i = 0; i < this.clusters.length; i++){
 
-            Cluster cluster = clusters[i];
+            Cluster cluster = this.clusters[i];
 
-            Point old = new Point(centroids[i]);
+            Point old = new Point(this.centroids[i]);
             Point fresh = cluster.geometricalMiddle();
 
             if(cluster.size() == 0) continue;
 
             //System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
 
-            double change = getDistance(old, fresh);
+            double change = this.getDistance(old, fresh);
 
             if(change > iterBiggestAdjustment) iterBiggestAdjustment = change;
 
-            centroids[i].moveTo(fresh);
+            this.centroids[i].moveTo(fresh);
         }
 
-        lastBiggestAdjustment = iterBiggestAdjustment;
+        this.lastBiggestAdjustment = iterBiggestAdjustment;
     }
 
 
@@ -305,10 +320,10 @@ public class KMeans implements ClusteringAlg {
         double minValue = Double.MAX_VALUE;
         int closestCentroidIndex = 0;
 
-        for (int j = 0; j < centroids.length; j++) {
-            Point centroid = centroids[j];
+        for (int j = 0; j < this.centroids.length; j++) {
+            Point centroid = this.centroids[j];
 
-            double actDistance = getDistance(point, centroid);
+            double actDistance = this.getDistance(point, centroid);
 
             if (actDistance < minValue) {
                 minValue = actDistance;
@@ -325,7 +340,7 @@ public class KMeans implements ClusteringAlg {
 
         double distance;
 
-        switch (distanceMethod){
+        switch (this.distanceMethod){
             default:
             case DISTANCE_EUKLEID:
                 distance = a.euclideanDistanceTo(b);
@@ -346,12 +361,12 @@ public class KMeans implements ClusteringAlg {
             return null;
         }
 
-        int index = getClosestCentroid(point);
-        clusters[index].add(point);
+        int index = this.getClosestCentroid(point);
+        this.clusters[index].add(point);
 
-        System.out.println(point.toString() + " was assigned to cluster " + clusters[index].getId() + ".");
+        System.out.println(point.toString() + " was assigned to cluster " + this.clusters[index].getId() + ".");
 
-        return clusters[index];
+        return this.clusters[index];
     }
 
 
@@ -375,10 +390,4 @@ public class KMeans implements ClusteringAlg {
         this.maxElbowIterations = maxElbowIterations;
     }
 
-    public void setElbowDifferenceTrigger(double elbowDifferenceTrigger) {
-        if(elbowDifferenceTrigger > 1) elbowDifferenceTrigger = 1;
-        if(elbowDifferenceTrigger < 0) elbowDifferenceTrigger = 0;
-
-        this.elbowDifferenceTrigger = elbowDifferenceTrigger;
-    }
 }

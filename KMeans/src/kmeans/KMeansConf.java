@@ -6,14 +6,15 @@ public class KMeansConf implements ClusteringAlgConf {
 
     private int clusterCount = 0;
     private int algRepeats = 20;
-    private double elbowTriggerValue;
+    private double elbowDroprateThreshold = 0.15d;
+    private double elbowDifferenceAbsThresholdValue = 0d;
 
     public int getClusterCount() {
         return this.clusterCount;
     }
 
     public void setClusterCount(int clusterCount) {
-        if(algRepeats < 0) return;
+        if (clusterCount < 0) return;
         this.clusterCount = clusterCount;
     }
 
@@ -22,16 +23,25 @@ public class KMeansConf implements ClusteringAlgConf {
     }
 
     public void setAlgRepeats(int algRepeats) {
-        if(algRepeats <= 0) return;
+        if (algRepeats <= 0) return;
         this.algRepeats = algRepeats;
     }
 
-    public void setElbowTriggerValue(double elbowTriggerValue) {
-        if(elbowTriggerValue <= 0) return;
-        this.elbowTriggerValue = elbowTriggerValue;
+    public void setElbowDroprateThreshold(double elbowDroprateThreshold) {
+        if (elbowDroprateThreshold <= 0) return;
+        this.elbowDroprateThreshold = elbowDroprateThreshold;
     }
 
-    public double getElbowTriggerValue() {
-        return this.elbowTriggerValue;
+    public double getElbowDroprateThresholdValue() {
+        return this.elbowDroprateThreshold;
     }
+
+    public double getElbowDifferenceAbsThresholdValue() {
+        return this.elbowDifferenceAbsThresholdValue;
+    }
+
+    public void setElbowDifferenceAbsThresholdValue(double elbowDifferenceAbsThresholdValue) {
+        this.elbowDifferenceAbsThresholdValue = elbowDifferenceAbsThresholdValue;
+    }
+
 }

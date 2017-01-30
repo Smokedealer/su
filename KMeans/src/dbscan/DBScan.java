@@ -49,31 +49,31 @@ public class DBScan implements ClusteringAlg {
 
         this.data = data;
         //clusterCount is not used, DBScan determines cluster count by itself
-        clusters = new ArrayList<>();
+        this.clusters = new ArrayList<>();
 
         this.start();
 
         this.addOutliersCluster();
 
-        return clusters.toArray(new Cluster[0]);
+        return this.clusters.toArray(new Cluster[0]);
     }
 
 
     private void start(){
-        for(Point p : data){
+        for(Point p : this.data){
             if(p.isVisited()) continue;
 
             p.setVisited(true);
 
-            List<Point> neighbours = getNeighbours(p, maxDistance);
+            List<Point> neighbours = this.getNeighbours(p, this.maxDistance);
 
-            if(neighbours.size() < minPoints){
+            if(neighbours.size() < this.minPoints){
                 p.setOutlier(true);
             }
             else {
                 Cluster cluster = new Cluster();
-                clusters.add(cluster);
-                expandCluster(p, neighbours, cluster);
+                this.clusters.add(cluster);
+                this.expandCluster(p, neighbours, cluster);
             }
         }
     }
@@ -88,14 +88,14 @@ public class DBScan implements ClusteringAlg {
             if (!other.isVisited()) {
                 other.setVisited(true);
 
-                List<Point> neighboursNeighbours = getNeighbours(other, maxDistance);
+                List<Point> neighboursNeighbours = this.getNeighbours(other, this.maxDistance);
 
-                if (neighboursNeighbours.size() >= minPoints) {
+                if (neighboursNeighbours.size() >= this.minPoints) {
                     neighbours.addAll(neighboursNeighbours);
                 }
             }
 
-            if (!isInCluster(other)) {
+            if (!this.isInCluster(other)) {
                 cluster.add(other);
             }
         }
@@ -104,7 +104,7 @@ public class DBScan implements ClusteringAlg {
     private boolean isInCluster(Point p){
         //if(clusters.isEmpty()) return false; // unnecessary, clusters.add() is called before this
 
-        for(Cluster c : clusters){
+        for(Cluster c : this.clusters){
             if(c.contains(p)) return true;
         }
 
@@ -114,7 +114,7 @@ public class DBScan implements ClusteringAlg {
     private List<Point> getNeighbours(Point p, double maxDistance){
         List<Point> neighbours = new ArrayList<>(2048);
 
-        for (Point other : data){
+        for (Point other : this.data){
             double distance = p.euclideanDistanceTo(other);
             if(Double.compare(distance, maxDistance) < 1){
                 neighbours.add(other);
@@ -132,7 +132,7 @@ public class DBScan implements ClusteringAlg {
         Cluster outliers = new Cluster();
         outliers.setShadowCluster(true);
 
-        for(Point p : data){
+        for(Point p : this.data){
             if(!p.isOutlier()) continue;
 
             outliers.add(p);
@@ -147,8 +147,8 @@ public class DBScan implements ClusteringAlg {
         int index = 0;
 
         //Iterate through points and find first unvisited point
-        for(; index < data.length; index++){
-            Point point = data[index];
+        for(; index < this.data.length; index++){
+            Point point = this.data[index];
 
             if(!point.isVisited()){
                 point.setVisited(true);
@@ -168,7 +168,7 @@ public class DBScan implements ClusteringAlg {
 
 
     public int getMinPoints() {
-        return minPoints;
+        return this.minPoints;
     }
 
     public void setMinPoints(int minPoints) {
@@ -176,7 +176,7 @@ public class DBScan implements ClusteringAlg {
     }
 
     public double getMaxDistance() {
-        return maxDistance;
+        return this.maxDistance;
     }
 
     public void setMaxDistance(double maxDistance) {
@@ -184,7 +184,7 @@ public class DBScan implements ClusteringAlg {
     }
 
     public int getMaxIterations() {
-        return maxIterations;
+        return this.maxIterations;
     }
 
     public void setMaxIterations(int maxIterations) {

@@ -40,7 +40,7 @@ public class App {
     private App(Object debugmode) {
         Point[] data = loadDataFromFile("data.txt");
 
-        if(data == null) {
+        if (data == null) {
             try {
                 DataGenerator dg = new DataGenerator(2, 5000, 50);
                 data = dg.generateClusteredData(40, 5).toArray(new Point[0]);
@@ -64,9 +64,9 @@ public class App {
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception ignored) { }
+        } catch (Exception ignored) { }
 
-        SwingUtilities.invokeLater(()->{
+        SwingUtilities.invokeLater(() -> {
             this.gui = new GUIForm();
             this.gui.setGUIController(new GUIController() {
 
@@ -76,8 +76,8 @@ public class App {
                 public void generateUniformData(int dimensions, int points, int spread) {
                     try {
                         DataGenerator dg = new DataGenerator(dimensions, points, spread);
-                        data = dg.generateData();
-                        gui.drawData(new Cluster[]{data});
+                        this.data = dg.generateData();
+                        App.this.gui.drawData(new Cluster[]{this.data});
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -87,8 +87,8 @@ public class App {
                 public void generateClusteredData(int dimensions, int points, int spread, int clusters, int clustersSpread) {
                     try {
                         DataGenerator dg = new DataGenerator(dimensions, points, spread);
-                        data = dg.generateClusteredData(clustersSpread, clusters);
-                        gui.drawData(new Cluster[]{data});
+                        this.data = dg.generateClusteredData(clustersSpread, clusters);
+                        App.this.gui.drawData(new Cluster[]{this.data});
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -101,11 +101,15 @@ public class App {
 
                 @Override
                 public void doClustering(int method, ClusteringAlgConf conf) {
-                    if(this.data == null) return;
+                    if (this.data == null) return;
 
-                    switch(method) {
-                        case 0: tryKMeans(deepCopyOfPoints(this.data), conf); break;
-                        case 1: tryDBScan(deepCopyOfPoints(this.data), conf); break;
+                    switch (method) {
+                        case 0:
+                            tryKMeans(deepCopyOfPoints(this.data), conf);
+                            break;
+                        case 1:
+                            tryDBScan(deepCopyOfPoints(this.data), conf);
+                            break;
                     }
                 }
             });
@@ -127,7 +131,7 @@ public class App {
             System.out.println(cluster.getCentroid().toString());
         }
 
-        gui.drawData(returned);
+        this.gui.drawData(returned);
     }
 
 
@@ -139,7 +143,7 @@ public class App {
 
         stopTimer();
 
-        gui.drawData(returned);
+        this.gui.drawData(returned);
     }
 
     private static void saveDataToFile(Point[] data, String file) {

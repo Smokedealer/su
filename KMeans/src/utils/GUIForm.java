@@ -5,9 +5,11 @@ import kmeans.KMeansConf;
 import structures.Cluster;
 import structures.ClusteringAlgConf;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.io.IOException;
 
 
 public class GUIForm extends JFrame {
@@ -34,10 +36,13 @@ public class GUIForm extends JFrame {
     private JPanel kmeansPanel;
     private JButton genprocessButton;
     private JSpinner kmeansAlgRepeatsSpinner;
-    private JSpinner kmeansElbowTriggerSpinner;
+    private JSpinner kmeansElbowAbsThresholdSpinner;
     private JSpinner dbscanMinPointsSpinner;
     private JSpinner dbscanMaxDistance;
     private JPanel dbscanPanel;
+    private JButton exportdataButton;
+    private JButton exportgraphButton;
+    private JSpinner kmeansElbowDroprateThresholdSpinner;
 
     private ClusteringCanvas clusteringCanvas;
     private utils.GUIController GUIController;
@@ -49,6 +54,7 @@ public class GUIForm extends JFrame {
         this.setTitle("Shluková analýza dat");
         this.add(this.rootPanel);
         this.setMinimumSize(this.rootPanel.getMinimumSize());
+        this.setPreferredSize(this.rootPanel.getPreferredSize());
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -70,7 +76,11 @@ public class GUIForm extends JFrame {
 
         this.kmeansClusterCountSpinner.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
         this.kmeansAlgRepeatsSpinner.setModel(new SpinnerNumberModel(20, 1, 1000, 1));
-        this.kmeansElbowTriggerSpinner.setModel(new SpinnerNumberModel(0.15d, 0.01d, 1d, 0.05d));
+        this.kmeansElbowAbsThresholdSpinner.setModel(new SpinnerNumberModel(10d, 0d, Integer.MAX_VALUE, 0.1d));
+        ((JSpinner.NumberEditor) this.kmeansElbowAbsThresholdSpinner.getEditor()).getFormat().setMinimumFractionDigits(1);
+        this.kmeansElbowDroprateThresholdSpinner.setModel(new SpinnerNumberModel(0.8d, 0, Integer.MAX_VALUE, 0.1d));
+        ((JSpinner.NumberEditor) this.kmeansElbowDroprateThresholdSpinner.getEditor()).getFormat().setMinimumFractionDigits(3);
+
 
         this.dbscanMinPointsSpinner.setModel(new SpinnerNumberModel(20, 1, Integer.MAX_VALUE, 1));
         this.dbscanMaxDistance.setModel(new SpinnerNumberModel(3d, 0.001d, (double) Integer.MAX_VALUE, 0.05d));
@@ -104,28 +114,27 @@ public class GUIForm extends JFrame {
 
 
         // open file chooser
-        final JFileChooser fc = new JFileChooser();
-
-        fc.setFileFilter(new FileFilter() {
+        JFileChooser openCsvFileChooser = new JFileChooser();
+        openCsvFileChooser.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File file) {
                 String path = file.getAbsolutePath().toLowerCase();
-                return file.isDirectory() || path.endsWith(".txt") || path.endsWith(".png") || path.endsWith(".bmp");
+                return file.isDirectory() || path.endsWith(".csv");
             }
 
             @Override
             public String getDescription() {
-                return "Images (*.txt;*.png;*.bmp)";
+                return "CSV files (*.csv)";
             }
         });
 
-
         this.fdOpenButton.addActionListener(e -> {
-            if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
-            this.fdFileField.setText(fc.getSelectedFile().getAbsolutePath());
+            if (openCsvFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+            this.fdFileField.setText(openCsvFileChooser.getSelectedFile().getAbsolutePath());
         });
 
 
+        // generate data button
         this.generateButton.addActionListener(e -> {
             utils.GUIController gdl = this.GUIController;
 
@@ -155,7 +164,8 @@ public class GUIForm extends JFrame {
             }
         });
 
-        processButton.addActionListener(e -> {
+        // process data / "do clustering" button
+        this.processButton.addActionListener(e -> {
             int method = this.methodComboBox.getSelectedIndex();
             ClusteringAlgConf conf;
 
@@ -166,7 +176,8 @@ public class GUIForm extends JFrame {
                     KMeansConf kMeansConf = new KMeansConf();
                     kMeansConf.setClusterCount((int) this.kmeansClusterCountSpinner.getValue());
                     kMeansConf.setAlgRepeats((int) this.kmeansAlgRepeatsSpinner.getValue());
-                    kMeansConf.setElbowTriggerValue((double) this.kmeansElbowTriggerSpinner.getValue());
+                    kMeansConf.setElbowDifferenceAbsThresholdValue((double) this.kmeansElbowAbsThresholdSpinner.getValue());
+                    kMeansConf.setElbowDroprateThreshold((double) this.kmeansElbowDroprateThresholdSpinner.getValue());
                     conf = kMeansConf;
                     break;
 
@@ -182,14 +193,46 @@ public class GUIForm extends JFrame {
             this.GUIController.doClustering(method, conf);
         });
 
-        genprocessButton.addActionListener(e -> {
+        // generate + process data button
+        this.genprocessButton.addActionListener(e -> {
             this.generateButton.doClick();
             this.processButton.doClick();
         });
+
+
+        // export output graph button
+        JFileChooser savePngFileChooser = new JFileChooser();
+        savePngFileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        savePngFileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                String path = file.getAbsolutePath().toLowerCase();
+                return file.isDirectory() || path.endsWith(".png");
+            }
+
+            @Override
+            public String getDescription() {
+                return "PNG image (*.png)";
+            }
+        });
+
+        this.exportgraphButton.addActionListener(e -> {
+            if (savePngFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+            String path = savePngFileChooser.getSelectedFile().getAbsolutePath();
+            if(!path.endsWith(".png")) path += ".png";
+
+            try {
+                ImageIO.write(this.clusteringCanvas.renderImage(1600, 1600), "png", new File(path));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
     }
 
     public void drawData(Cluster[] clusters){
-        this.clusteringCanvas.drawData(clusters);
+        this.clusteringCanvas.setData(clusters);
         this.repaint();
     }
 

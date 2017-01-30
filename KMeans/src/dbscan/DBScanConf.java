@@ -7,7 +7,7 @@ public class DBScanConf implements ClusteringAlgConf {
     private int minPoints = 20;
 
     public double getMaxDistance() {
-        return maxDistance;
+        return this.maxDistance;
     }
 
     public void setMaxDistance(double maxDistance) {

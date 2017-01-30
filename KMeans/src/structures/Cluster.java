@@ -14,7 +14,7 @@ public class Cluster extends HashSet<Point> {
 
     public Cluster(){
         super();
-        id = clusterID++;
+        this.id = clusterID++;
     }
 
     public Point geometricalMiddle(){
@@ -40,7 +40,7 @@ public class Cluster extends HashSet<Point> {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
 
@@ -93,7 +93,7 @@ public class Cluster extends HashSet<Point> {
         int count = 0;
 
         for(Point p : this){
-            average += Math.pow(centroid.euclideanDistanceTo(p), 2d);
+            average += Math.pow(this.centroid.euclideanDistanceTo(p), 2d);
             count++;
         }
 
@@ -107,11 +107,11 @@ public class Cluster extends HashSet<Point> {
     }
 
     public Point getCentroid() {
-        return centroid;
+        return this.centroid;
     }
 
     public boolean isShadowCluster() {
-        return shadowCluster;
+        return this.shadowCluster;
     }
 
     public void setShadowCluster(boolean shadowCluster) {
@@ -122,9 +122,18 @@ public class Cluster extends HashSet<Point> {
     @Override
     public String toString() {
         return "Cluster{" +
-                "id=" + id +
-                ", centroid=" + centroid +
+                "id=" + this.id +
+                ", centroid=" + this.centroid +
                 '}';
     }
 
+    public double sse() {
+        double sse = 0;
+
+        for(Point p : this){
+            sse += Math.pow(this.centroid.euclideanDistanceTo(p), 2d);
+        }
+
+        return sse;
+    }
 }
