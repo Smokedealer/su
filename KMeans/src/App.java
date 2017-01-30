@@ -104,6 +104,7 @@ public class App {
                     if(data == null || data.isEmpty()){
                         JOptionPane.showMessageDialog(App.this.gui, "File \"" + file + "\" could not be read.");
                     }else {
+                        this.data.setShadowCluster(true);
                         App.this.gui.drawData(new Cluster[]{this.data});
                     }
                 }
