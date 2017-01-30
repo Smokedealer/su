@@ -240,5 +240,8 @@ public class GUIForm extends JFrame {
         this.GUIController = GUIController;
     }
 
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 }
 
