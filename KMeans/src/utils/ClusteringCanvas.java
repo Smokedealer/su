@@ -85,13 +85,14 @@ public class ClusteringCanvas extends JPanel {
 
         g2.drawString("0", x + 3, y - 3);
 
-        int fractionCount = 5;
+        int fractionCount = 10;
         DecimalFormat df = new DecimalFormat("#0.00");
 
         for (int i = 0; i < fractionCount; i++){
             int xFraction = image.getWidth() / fractionCount;
             int yFraction = image.getHeight() / fractionCount;
 
+            //Netuším proč tyhle dvě věci počítají správně
             double xValue = -((i*((globalBounds[1] - globalBounds[0])/fractionCount))-globalBounds[1]);
             double yValue = -((i*((globalBounds[3] - globalBounds[2])/fractionCount))-globalBounds[3]);
 
@@ -101,7 +102,7 @@ public class ClusteringCanvas extends JPanel {
 
 
             g2.drawLine(x - 3, i * yFraction, x + 3, i * yFraction);
-            g2.drawString(df.format(yValue), x + 16, yFraction * (fractionCount - i));
+            g2.drawString(df.format(yValue), x + 10, yFraction * (fractionCount - i) + 5);
         }
     }
 
