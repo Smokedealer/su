@@ -5,6 +5,8 @@ import structures.Cluster;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class ClusteringCanvas extends JPanel {
     private BufferedImage temp;
@@ -72,13 +74,35 @@ public class ClusteringCanvas extends JPanel {
     }
 
     private void drawGuideLines(BufferedImage image, Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
-        g2.setColor(Color.LIGHT_GRAY);
+//        g2.setColor(Color.LIGHT_GRAY);
+        g2.setColor(Color.BLACK);
 
         int x = (int) ((0 - globalBounds[1]) * scaleX);
         int y = image.getHeight() - (int) ((0 - globalBounds[3]) * scaleY);
 
         g2.drawLine(0, y, image.getWidth(), y);
         g2.drawLine(x, 0, x, image.getHeight());
+
+        g2.drawString("0", x + 3, y - 3);
+
+        int fractionCount = 5;
+        DecimalFormat df = new DecimalFormat("#0.00");
+
+        for (int i = 0; i < fractionCount; i++){
+            int xFraction = image.getWidth() / fractionCount;
+            int yFraction = image.getHeight() / fractionCount;
+
+            double xValue = -((i*((globalBounds[1] - globalBounds[0])/fractionCount))-globalBounds[1]);
+            double yValue = -((i*((globalBounds[3] - globalBounds[2])/fractionCount))-globalBounds[3]);
+
+
+            g2.drawLine(i * xFraction, y - 3, i * xFraction, y + 3);
+            g2.drawString(df.format(xValue), i * xFraction - 3, y + 16);
+
+
+            g2.drawLine(x - 3, i * yFraction, x + 3, i * yFraction);
+            g2.drawString(df.format(yValue), x + 16, yFraction * (fractionCount - i));
+        }
     }
 
     private void drawClusters(BufferedImage image, Graphics2D g2, Cluster[] clusters, double[] globalBounds, double scaleX, double scaleY) {
