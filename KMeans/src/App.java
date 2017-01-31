@@ -130,11 +130,11 @@ public class App {
                     stopTimer();
 
                     System.out.println();
-                    System.out.println("Found " + clusters.length + " clusters with centroids:");
+                    System.out.println("Found " + clusters.length + " clusters with geometrical middles:");
 
                     for (Cluster cluster : clusters) {
                         if(cluster.isShadowCluster()) continue;
-                        System.out.println(" - " + cluster.getCentroid().toString());
+                        System.out.println(" - " + cluster.geometricalMiddle().toString());
                     }
 
                     App.this.gui.drawData(clusters);
