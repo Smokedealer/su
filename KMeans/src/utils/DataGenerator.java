@@ -30,21 +30,11 @@ public class DataGenerator {
         Cluster cluster = new Cluster();
         cluster.setShadowCluster(true);
 
-        for(int i = 0; i < pointCount; i++){
-            cluster.add(generateRandomPoint(this.spread));
+        for(int i = 0; i < this.pointCount; i++){
+            cluster.add(this.generateRandomPoint(this.spread));
         }
 
         return cluster;
-    }
-
-    public Point[] generateLineData(){
-        Point[] data = new Point[pointCount];
-
-        for(int i = 0; i < pointCount; i++){
-            data[i] = generatePointOnLine();
-        }
-
-        return data;
     }
 
     public Cluster generateClusteredData(double centroidsSpread, int clustersCount){
@@ -53,19 +43,19 @@ public class DataGenerator {
         Random rng = new Random();
 
         Point center = null;
-        int maxPointsPerCluster = pointCount / clustersCount;
+        int maxPointsPerCluster = this.pointCount / clustersCount;
         int nextClusterSize = 0;
 
         int i = 0;
 
-        while(i < pointCount){
+        while(i < this.pointCount){
             if(clustersCount > 0 && nextClusterSize <= 0) {
-                center = generateRandomPoint(centroidsSpread);
+                center = this.generateRandomPoint(centroidsSpread);
                 nextClusterSize = rng.nextInt(maxPointsPerCluster / 2 + 1) + maxPointsPerCluster / 2;
                 clustersCount--;
             }
 
-            cluster.add(generateNearRandomPoint(center, this.spread));
+            cluster.add(this.generateNearRandomPoint(center, this.spread));
             i++;
             nextClusterSize--;
         }
@@ -75,10 +65,10 @@ public class DataGenerator {
 
 
     private Point generateRandomPoint(double spread) {
-        Point generatedPoint = new Point(dimension);
+        Point generatedPoint = new Point(this.dimension);
         Random rng = new Random();
 
-        for(int i = 0; i < dimension; i++){
+        for(int i = 0; i < this.dimension; i++){
             double value = rng.nextDouble() * spread * 2 - spread;
             generatedPoint.setSpecificCoord(i, value);
         }
@@ -87,10 +77,10 @@ public class DataGenerator {
     }
 
     private Point generateNearRandomPoint(Point center, double spread) {
-        Point generatedPoint = new Point(dimension);
+        Point generatedPoint = new Point(this.dimension);
         Random rng = new Random();
 
-        for(int i = 0; i < dimension; i++){
+        for(int i = 0; i < this.dimension; i++){
             double value = center.getSpecificCoord(i) + (rng.nextGaussian() * spread - spread);
             generatedPoint.setSpecificCoord(i, value);
         }
@@ -98,15 +88,5 @@ public class DataGenerator {
         return generatedPoint;
     }
 
-    private Point generatePointOnLine() {
-        Point generatedPoint = new Point(dimension);
-        Random rng = new Random();
-
-        for(int j = 0; j < dimension; j++){
-            generatedPoint.setSpecificCoord(j, 1.0);
-        }
-
-        return generatedPoint;
-    }
 
 }

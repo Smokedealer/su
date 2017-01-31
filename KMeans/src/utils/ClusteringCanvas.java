@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class ClusteringCanvas extends JPanel {
     private BufferedImage temp;
@@ -74,8 +73,8 @@ public class ClusteringCanvas extends JPanel {
     }
 
     private void drawGuideLines(BufferedImage image, Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
-//        g2.setColor(Color.LIGHT_GRAY);
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.LIGHT_GRAY);
+        //g2.setColor(Color.BLACK);
 
         int x = (int) ((0 - globalBounds[1]) * scaleX);
         int y = image.getHeight() - (int) ((0 - globalBounds[3]) * scaleY);
@@ -83,26 +82,71 @@ public class ClusteringCanvas extends JPanel {
         g2.drawLine(0, y, image.getWidth(), y);
         g2.drawLine(x, 0, x, image.getHeight());
 
-        g2.drawString("0", x + 3, y - 3);
+        // labels + ticks
+        g2.drawString("0", x + 5, y + 15);
 
         int fractionCount = 10;
-        DecimalFormat df = new DecimalFormat("#0.00");
 
-        for (int i = 0; i < fractionCount; i++){
-            int xFraction = image.getWidth() / fractionCount;
-            int yFraction = image.getHeight() / fractionCount;
+        // count nearest value for rounding (0.5, 5, 50, ...)
+        double yNearest = 0.5 * Math.pow(10, Math.floor(Math.log10((globalBounds[2] - globalBounds[3])*0.5)));
+        double xNearest = 0.5 * Math.pow(10, Math.floor(Math.log10((globalBounds[0] - globalBounds[1])*0.5)));
 
-            //Netuším proč tyhle dvě věci počítají správně
-            double xValue = -((i*((globalBounds[1] - globalBounds[0])/fractionCount))-globalBounds[1]);
-            double yValue = -((i*((globalBounds[3] - globalBounds[2])/fractionCount))-globalBounds[3]);
+        double yValFraction = Math.ceil((globalBounds[2] - globalBounds[3]) / fractionCount / yNearest) * yNearest;
+        double xValFraction = Math.ceil((globalBounds[0] - globalBounds[1]) / fractionCount / xNearest) * xNearest;
+
+        DecimalFormat df = new DecimalFormat(yNearest + xNearest <= 1 ? "#0.0" : "#0");
+
+        // x ticks
+        if (xValFraction > 0) {
+            double xValue = 0;
+            while (true) {
+                xValue += xValFraction; // positive values
+                int xPos = (int) ((xValue - globalBounds[1]) * scaleX);
+
+                if (xPos > image.getWidth()) break;
+
+                String str = df.format(xValue);
+                g2.drawLine(xPos, y - 3, xPos, y + 3);
+                g2.drawString(str, xPos - str.length() * 3, y + 18);
+            }
+            xValue = 0;
+            while (true) {
+                xValue -= Math.abs(xValFraction); // negative values
+                int xPos = (int) ((xValue - globalBounds[1]) * scaleX);
+
+                if (xPos < 0) break;
+
+                String str = df.format(xValue);
+                g2.drawLine(xPos, y - 3, xPos, y + 3);
+                g2.drawString(str, xPos - str.length() * 3, y + 18);
+            }
+        }
 
 
-            g2.drawLine(i * xFraction, y - 3, i * xFraction, y + 3);
-            g2.drawString(df.format(xValue), i * xFraction - 3, y + 16);
+        // y ticks
+        if (yValFraction > 0) {
+            double yValue = 0;
+            while (true) {
+                yValue += yValFraction; // positive values
+                int yPos = image.getHeight() - (int) ((yValue - globalBounds[3]) * scaleY);
 
+                if (yPos < 0) break;
 
-            g2.drawLine(x - 3, i * yFraction, x + 3, i * yFraction);
-            g2.drawString(df.format(yValue), x + 10, yFraction * (fractionCount - i) + 5);
+                String str = df.format(yValue);
+                g2.drawLine(x - 3, yPos, x + 3, yPos);
+                g2.drawString(str, x + 8, yPos + 4);
+            }
+            yValue = 0;
+            while (true) {
+                yValue -= Math.abs(yValFraction); // negative values
+                int yPos = image.getHeight() - (int) ((yValue - globalBounds[3]) * scaleY);
+
+                if (yPos > image.getHeight()) break;
+
+                String str = df.format(yValue);
+                g2.drawLine(x - 3, yPos, x + 3, yPos);
+                g2.drawString(str, x + 8, yPos + 4);
+            }
         }
     }
 
