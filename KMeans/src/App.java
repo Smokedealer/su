@@ -24,7 +24,6 @@ import java.util.Scanner;
 public class App {
 
     private static long timeStart;
-    private static long timeEnd;
 
     private GUIForm gui;
 
@@ -39,7 +38,7 @@ public class App {
      * Just for testing! GUI won't work properly.
      */
     private App(Object debugmode) {
-        Point[] data = loadDataFromFile("data.txt");
+        Point[] data = deserializeDataFromFile("data.txt");
 
         if (data == null) {
             try {
@@ -47,7 +46,7 @@ public class App {
                 data = dg.generateClusteredData(40, 5).toArray(new Point[0]);
                 //data = dg.generateData();
 
-                saveDataToFile(data, "data.txt");
+                serializeDataToFile(data, "data.txt");
             } catch (Exception e) {
                 System.err.println("Invalid data for DataGenerator.");
             }
@@ -130,6 +129,14 @@ public class App {
                     Cluster[] clusters = alg.doClustering(deepCopyOfPoints(this.data), conf);
                     stopTimer();
 
+                    System.out.println();
+                    System.out.println("Found " + clusters.length + " clusters with centroids:");
+
+                    for (Cluster cluster : clusters) {
+                        if(cluster.isShadowCluster()) continue;
+                        System.out.println(" - " + cluster.getCentroid().toString());
+                    }
+
                     App.this.gui.drawData(clusters);
                 }
             });
@@ -166,7 +173,7 @@ public class App {
         this.gui.drawData(returned);
     }
 
-    private static void saveDataToFile(Point[] data, String file) {
+    private static void serializeDataToFile(Point[] data, String file) {
         FileOutputStream fout;
         try {
             fout = new FileOutputStream(file);
@@ -177,7 +184,7 @@ public class App {
         }
     }
 
-    private static Point[] loadDataFromFile(String file) {
+    private static Point[] deserializeDataFromFile(String file) {
         Point[] points = null;
 
         FileInputStream fin;
@@ -193,6 +200,7 @@ public class App {
         return points;
     }
 
+    @Deprecated
     private static void scanInput(ClusteringAlg clustering) {
         Scanner sc = new Scanner(System.in);
 
@@ -218,8 +226,7 @@ public class App {
     }
 
     private static void stopTimer() {
-        timeEnd = System.currentTimeMillis();
-        System.out.println("Algorithm took " + (timeEnd - timeStart) + "ms to complete.");
+        System.out.println("=== Algorithm took " + (System.currentTimeMillis() - timeStart) + " ms to complete. ===");
     }
 
     private static Point[] deepCopyOfPoints(Cluster cluster) {
