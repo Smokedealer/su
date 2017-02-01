@@ -133,7 +133,7 @@ public class DBScan implements ClusteringAlg {
         outliers.setShadowCluster(true);
 
         for(Point p : this.data){
-            if(!p.isOutlier()) continue;
+            if(this.isInCluster(p)) continue;
 
             outliers.add(p);
         }
