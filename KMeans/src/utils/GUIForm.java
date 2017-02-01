@@ -5,11 +5,9 @@ import kmeans.KMeansConf;
 import structures.Cluster;
 import structures.ClusteringAlgConf;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.io.IOException;
 
 
 public class GUIForm extends JFrame {
@@ -218,15 +216,29 @@ public class GUIForm extends JFrame {
 
         this.exportgraphButton.addActionListener(e -> {
             if (savePngFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+            this.GUIController.exportPNG(savePngFileChooser.getSelectedFile(), this.clusteringCanvas.renderImage(1600, 1600));
+        });
 
-            String path = savePngFileChooser.getSelectedFile().getAbsolutePath();
-            if(!path.endsWith(".png")) path += ".png";
 
-            try {
-                ImageIO.write(this.clusteringCanvas.renderImage(1600, 1600), "png", new File(path));
-            } catch (IOException ex) {
-                ex.printStackTrace();
+        // export CSV button
+        JFileChooser saveCsvFileChooser = new JFileChooser();
+        saveCsvFileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        saveCsvFileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                String path = file.getAbsolutePath().toLowerCase();
+                return file.isDirectory() || path.endsWith(".csv");
             }
+
+            @Override
+            public String getDescription() {
+                return "CSV file (*.csv)";
+            }
+        });
+
+        this.exportdataButton.addActionListener(e -> {
+            if (saveCsvFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+            this.GUIController.exportCSV(saveCsvFileChooser.getSelectedFile());
         });
 
     }

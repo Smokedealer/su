@@ -9,13 +9,12 @@ import structures.Point;
 import utils.DataGenerator;
 import utils.GUIController;
 import utils.GUIForm;
-import utils.InputDataParser;
+import utils.CsvDataProcessor;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -71,6 +70,7 @@ public class App {
             this.gui.setGUIController(new GUIController() {
 
                 Cluster data = null;
+                Cluster[] clusteredData = null;
 
                 @Override
                 public void generateUniformData(int dimensions, int points, int spread) {
@@ -88,7 +88,8 @@ public class App {
                     try {
                         DataGenerator dg = new DataGenerator(dimensions, points, spread);
                         this.data = dg.generateClusteredData(clustersSpread, clusters);
-                        App.this.gui.drawData(new Cluster[]{this.data});
+                        this.clusteredData = new Cluster[]{this.data};
+                        App.this.gui.drawData(this.clusteredData);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -96,15 +97,16 @@ public class App {
 
                 @Override
                 public void loadFileData(String file) {
-                    InputDataParser parser = new InputDataParser();
+                    CsvDataProcessor csv = new CsvDataProcessor();
 
-                    this.data = parser.readFile(file);
+                    this.data = csv.readFile(file);
 
                     if(this.data == null || this.data.isEmpty()){
                         App.this.gui.showMessage("Soubor \"" + file + "\" se nepodařilo načíst.");
                     } else {
                         this.data.setShadowCluster(true);
-                        App.this.gui.drawData(new Cluster[]{this.data});
+                        this.clusteredData = new Cluster[]{this.data};
+                        App.this.gui.drawData(this.clusteredData);
                     }
                 }
 
@@ -118,7 +120,7 @@ public class App {
                         default:
                         case 0:
                             alg = new KMeans();
-                            //alg = new EM();
+                            //alg = new em.EM();
                             break;
                         case 1:
                             alg = new DBScan();
@@ -128,7 +130,6 @@ public class App {
                     startTimer();
                     Cluster[] clusters = alg.doClustering(deepCopyOfPoints(this.data), conf);
                     stopTimer();
-
                     System.out.println();
                     System.out.println("Found " + clusters.length + " clusters with geometrical middles:");
 
@@ -137,7 +138,33 @@ public class App {
                         System.out.println(" - " + cluster.geometricalMiddle().toString());
                     }
 
-                    App.this.gui.drawData(clusters);
+                    this.clusteredData = clusters;
+                    App.this.gui.drawData(this.clusteredData);
+                }
+
+                @Override
+                public void exportPNG(File file, BufferedImage image) {
+                    String path = file.getAbsolutePath();
+                    if(!path.endsWith(".png")) path += ".png";
+
+                    try {
+                        ImageIO.write(image, "png", new File(path));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void exportCSV(File file) {
+                    String path = file.getAbsolutePath();
+                    if(!path.endsWith(".csv")) path += ".csv";
+
+                    try {
+                        CsvDataProcessor csv = new CsvDataProcessor();
+                        csv.saveFile(this.clusteredData, new File(path));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         });

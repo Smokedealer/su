@@ -1,3 +1,5 @@
+package em;
+
 import structures.Cluster;
 import structures.ClusteringAlg;
 import structures.ClusteringAlgConf;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Deprecated
 public class EM implements ClusteringAlg {
 
     @Override

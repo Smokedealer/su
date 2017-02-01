@@ -1,6 +1,9 @@
 package utils;
 import structures.ClusteringAlgConf;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+
 
 public interface GUIController {
 
@@ -10,4 +13,7 @@ public interface GUIController {
 
     void doClustering(int method, ClusteringAlgConf conf);
 
+    void exportPNG(File file, BufferedImage image);
+
+    void exportCSV(File file);
 }
