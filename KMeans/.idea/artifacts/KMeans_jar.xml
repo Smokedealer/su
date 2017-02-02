@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="KMeans:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/KMeans_jar</output-path>
+    <root id="archive" name="KMeans.jar">
+      <element id="module-output" name="KMeans" />
+    </root>
+  </artifact>
+</component>
