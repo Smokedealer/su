@@ -241,6 +241,13 @@ public class GUIForm extends JFrame {
             this.GUIController.exportCSV(saveCsvFileChooser.getSelectedFile());
         });
 
+
+        this.kmeansClusterCountSpinner.addChangeListener(e -> {
+            boolean elbowing = ((int) this.kmeansClusterCountSpinner.getValue() == 0);
+
+            this.kmeansElbowAbsThresholdSpinner.setEnabled(elbowing);
+            this.kmeansElbowDroprateThresholdSpinner.setEnabled(elbowing);
+        });
     }
 
     public void drawData(Cluster[] clusters){
