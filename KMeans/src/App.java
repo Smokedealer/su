@@ -2,6 +2,7 @@ import dbscan.DBScan;
 import dbscan.DBScanConf;
 import kmeans.KMeans;
 import kmeans.KMeansConf;
+import kmeans.KMedians;
 import structures.Cluster;
 import structures.ClusteringAlg;
 import structures.ClusteringAlgConf;
@@ -15,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -101,7 +103,7 @@ public class App {
 
                     this.data = csv.readFile(file);
 
-                    if(this.data == null || this.data.isEmpty()){
+                    if (this.data == null || this.data.isEmpty()) {
                         App.this.gui.showMessage("Soubor \"" + file + "\" se nepodařilo načíst.");
                     } else {
                         this.data.setShadowCluster(true);
@@ -125,16 +127,22 @@ public class App {
                         case 1:
                             alg = new DBScan();
                             break;
+                        case 2:
+                            alg = new KMedians();
+                            break;
                     }
 
                     startTimer();
                     Cluster[] clusters = alg.doClustering(deepCopyOfPoints(this.data), conf);
                     stopTimer();
                     System.out.println();
-                    System.out.println("Found " + clusters.length + " clusters with geometrical middles:");
+
+                    // count clusters excl. shadows
+                    long foundClusters = Arrays.stream(clusters).filter(f -> !f.isShadowCluster()).count();
+                    System.out.println("Found " + foundClusters + " clusters with geometrical middles:");
 
                     for (Cluster cluster : clusters) {
-                        if(cluster.isShadowCluster()) continue;
+                        if (cluster.isShadowCluster()) continue;
                         System.out.println(" - " + cluster.geometricalMiddle().toString());
                     }
 
@@ -145,7 +153,7 @@ public class App {
                 @Override
                 public void exportPNG(File file, BufferedImage image) {
                     String path = file.getAbsolutePath();
-                    if(!path.endsWith(".png")) path += ".png";
+                    if (!path.endsWith(".png")) path += ".png";
 
                     try {
                         ImageIO.write(image, "png", new File(path));
@@ -157,7 +165,7 @@ public class App {
                 @Override
                 public void exportCSV(File file) {
                     String path = file.getAbsolutePath();
-                    if(!path.endsWith(".csv")) path += ".csv";
+                    if (!path.endsWith(".csv")) path += ".csv";
 
                     try {
                         CsvDataProcessor csv = new CsvDataProcessor();

@@ -14,10 +14,10 @@ import java.util.List;
 public class DBScan implements ClusteringAlg {
 
     /** Minimum points to count as a cluster */
-    private int minPoints = 20;
+    private int minPoints;
 
     /** Maximum distance between two points still to be counted as neighbours */
-    private double maxDistance = 3.0;
+    private double maxDistance;
 
     /** Array of centroids **/
     private Point[] centroids;
@@ -38,6 +38,8 @@ public class DBScan implements ClusteringAlg {
 
     @Override
     public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
+        if(conf == null) conf = new DBScanConf();
+
         //Wrong data
         if(data == null || data.length == 0 || !(conf instanceof DBScanConf)) return null;
 
@@ -53,7 +55,7 @@ public class DBScan implements ClusteringAlg {
 
         this.start();
 
-        this.addOutliersCluster();
+        this.addOutliersCluster(); // shadow cluster with points missing in all other clusters
 
         return this.clusters.toArray(new Cluster[0]);
     }

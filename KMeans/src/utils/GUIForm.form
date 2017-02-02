@@ -298,6 +298,7 @@
                       <model>
                         <item value="K-Means"/>
                         <item value="DBScan"/>
+                        <item value="K-Medians"/>
                       </model>
                     </properties>
                   </component>

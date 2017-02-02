@@ -106,7 +106,7 @@ public class GUIForm extends JFrame {
         this.methodComboBox.addActionListener(e -> {
             int sel = this.methodComboBox.getSelectedIndex();
 
-            this.kmeansPanel.setVisible(sel == 0);
+            this.kmeansPanel.setVisible(sel == 0 || sel == 2);
             this.dbscanPanel.setVisible(sel == 1);
         });
 
@@ -165,12 +165,12 @@ public class GUIForm extends JFrame {
         // process data / "do clustering" button
         this.processButton.addActionListener(e -> {
             int method = this.methodComboBox.getSelectedIndex();
-            ClusteringAlgConf conf;
+            ClusteringAlgConf conf = null;
 
             switch(method) {
 
-                default:
                 case 0:
+                case 2:
                     KMeansConf kMeansConf = new KMeansConf();
                     kMeansConf.setClusterCount((int) this.kmeansClusterCountSpinner.getValue());
                     kMeansConf.setAlgRepeats((int) this.kmeansAlgRepeatsSpinner.getValue());

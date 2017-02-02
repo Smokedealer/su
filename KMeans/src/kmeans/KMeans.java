@@ -18,48 +18,50 @@ public class KMeans implements ClusteringAlg {
 
 
     /** Method used for determining distances of points **/
-    private int distanceMethod;
+    protected int distanceMethod;
 
     /** Array of centroids **/
-    private Point[] centroids;
+    protected Point[] centroids;
 
     /** Data for clustering **/
-    private Point[] data;
+    protected Point[] data;
 
     /** Number of clusters to be done **/
-    private int clusterCount;
+    protected int clusterCount;
 
     /** Array of clusters **/
-    private Cluster[] clusters;
+    protected Cluster[] clusters;
 
     /** If the convergence is lower than this amount, algorithm will stop **/
-    private double convergenceThreshold;
+    protected double convergenceThreshold;
 
     /** Biggest distance traveled by a centroid in one iteration **/
-    private double lastBiggestAdjustment;
+    protected double lastBiggestAdjustment;
 
     /** Fail safe for ending the iterations **/
-    private int maxIterations;
+    protected int maxIterations;
 
 
-    private SortedMap<Double, Cluster[]> results;
+    protected SortedMap<Double, Cluster[]> results;
 
-    private Cluster[] previousResult;
+    protected Cluster[] previousResult;
 
-    private ArrayList<Double> elbowValues;
+    protected ArrayList<Double> elbowValues;
 
-    private boolean isElbowingEnabled = false;
+    protected boolean isElbowingEnabled = false;
 
-    private double elbowDifferenceAbsThreshold;
+    protected double elbowDifferenceAbsThreshold;
 
-    private double elbowDroprateThreshold = 0.8d;
+    protected double elbowDroprateThreshold = 0.8d;
 
-    private int maxElbowIterations = 15;
+    protected int maxElbowIterations = 15;
 
 
 
     @Override
     public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
+
+        if(conf == null) conf = new KMeansConf();
 
         //Wrong data
         if(data == null || data.length == 0 || !(conf instanceof KMeansConf)) return null;
@@ -136,7 +138,7 @@ public class KMeans implements ClusteringAlg {
     }
 
 
-    private void start(){
+    protected void start(){
         this.centroids = new Point[this.clusterCount];
         this.clusters = new Cluster[this.clusterCount];
 
@@ -167,7 +169,7 @@ public class KMeans implements ClusteringAlg {
      *
      * @return true - if the result wasn't good enough to stop
      */
-    private boolean doElbowing(){
+    protected boolean doElbowing(){
         boolean result = true;
 
         this.elbowValues.add(this.results.firstKey());
@@ -211,7 +213,7 @@ public class KMeans implements ClusteringAlg {
      * @param iteration
      * @return true - adjusting should stop
      */
-    private boolean convergenceIsLow(int iteration){
+    protected boolean convergenceIsLow(int iteration){
         boolean result = false;
 
         if(this.lastBiggestAdjustment <= this.convergenceThreshold || iteration > this.maxIterations) result = true;
@@ -225,7 +227,7 @@ public class KMeans implements ClusteringAlg {
      *
      * @return double jValue
      */
-    private double jFunction(){
+    protected double jFunction(){
         double average = 0;
         int count = 0;
 
@@ -245,7 +247,7 @@ public class KMeans implements ClusteringAlg {
     /**
      * Initializes centroids at locations of the few first data points.
      */
-    private void initCentroids(){
+    protected void initCentroids(){
         ArrayList<Integer> startingPoints = new ArrayList<Integer>(this.clusterCount);
         Random rng = new Random();
 
@@ -267,7 +269,7 @@ public class KMeans implements ClusteringAlg {
     }
 
 
-    private void assignCentroids(){
+    protected void assignCentroids(){
         //Clear all
         for(Cluster cluster : this.clusters){
             cluster.clear();
@@ -288,19 +290,17 @@ public class KMeans implements ClusteringAlg {
     }
 
 
-
-    private void adjustCentroids(){
+    protected void adjustCentroids(){
         double iterBiggestAdjustment = 0;
         this.lastBiggestAdjustment = 0;
 
         for(int i = 0; i < this.clusters.length; i++){
-
             Cluster cluster = this.clusters[i];
-
-            Point old = new Point(this.centroids[i]);
-            Point fresh = cluster.geometricalMiddle();
-
             if(cluster.size() == 0) continue;
+
+            Point old = this.centroids[i];
+            Point fresh = this.getNewCentroid(cluster);
+
 
             //System.out.println("Centroid " + centroids[i].id + " moved by " + getDistance(old, fresh));
 
@@ -315,7 +315,12 @@ public class KMeans implements ClusteringAlg {
     }
 
 
-    private int getClosestCentroid(Point point){
+    protected Point getNewCentroid(Cluster cluster) {
+        return cluster.geometricalMiddle();
+    }
+
+
+    protected int getClosestCentroid(Point point){
 
         double minValue = Double.MAX_VALUE;
         int closestCentroidIndex = 0;

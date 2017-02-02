@@ -27,7 +27,6 @@ public class Cluster extends HashSet<Point> {
         if(this.isEmpty()) return null;
 
         int dimension = this.iterator().next().getDimension();
-
         Point center = new Point(dimension);
 
         for(int i = 0; i < dimension; i++){
@@ -43,6 +42,28 @@ public class Cluster extends HashSet<Point> {
         }
 
         return center;
+    }
+
+    public Point geometricMedian(){
+        if(this.isEmpty()) return null;
+
+        int dimension = this.iterator().next().getDimension();
+        Point median = new Point(dimension);
+
+        for(int i = 0; i < dimension; i++){
+            double[] coord = new double[this.size()];
+            int j = 0;
+
+            for(Point p : this){
+                coord[j++] = p.getSpecificCoord(i);
+            }
+
+            Arrays.sort(coord);
+
+            median.setSpecificCoord(i, coord[j / 2]);
+        }
+
+        return median;
     }
 
     public int getId() {
@@ -106,6 +127,19 @@ public class Cluster extends HashSet<Point> {
         average /= count;
 
         return average;
+    }
+
+    public double median(){
+        double[] distances = new double[this.size()];
+        int i = 0;
+
+        for(Point p : this){
+            distances[i++] = this.centroid.euclideanDistanceTo(p);
+        }
+
+        Arrays.sort(distances);
+
+        return distances[i / 2];
     }
 
     public void setCentroid(Point centroid) {
