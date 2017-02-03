@@ -351,7 +351,7 @@
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Elbow, práh rozdílu"/>
+                      <text value="Elbow, práh rozdílu:"/>
                       <toolTipText value="Pokud je rozdíl ohodnocení dvou po sobě jdoucích iterací menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
                     </properties>
                   </component>
@@ -368,7 +368,7 @@
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Elbow, práh zpomalení"/>
+                      <text value="Elbow, práh zpomalení:"/>
                       <toolTipText value="Pokud je podíl ohodnocení dvou po sobě jdoucích iterací (neboli zpomalení) menší než prahová hodnota, je první z nich označen jako zlom (elbow) a použit pro výstup. "/>
                     </properties>
                   </component>
