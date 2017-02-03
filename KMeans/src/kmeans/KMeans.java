@@ -268,6 +268,9 @@ public class KMeans implements ClusteringAlg {
     }
 
 
+    /**
+     * Every point gets assigned to closest centroid
+     */
     protected void assignCentroids(){
         //Clear all
         for(Cluster cluster : this.clusters){
@@ -288,7 +291,9 @@ public class KMeans implements ClusteringAlg {
         }
     }
 
-
+    /**
+     * Every centroid gets adjusted to the geometrical middle of it's cluster
+     */
     protected void adjustCentroids(){
         double iterBiggestAdjustment = 0;
         this.lastBiggestAdjustment = 0;
@@ -318,7 +323,12 @@ public class KMeans implements ClusteringAlg {
         return cluster.geometricalMiddle();
     }
 
-
+    /**
+     * For given point the method returns closest Centroid
+     *
+     * @param point
+     * @return int index of the closest centroid to given point
+     */
     protected int getClosestCentroid(Point point){
 
         double minValue = Double.MAX_VALUE;
@@ -340,6 +350,14 @@ public class KMeans implements ClusteringAlg {
     }
 
 
+    /**
+     * Returns distance between point a and point b. The distance method has to be
+     * set in an advance via {@link #setDistanceMethod(int)} (int) setDistanceMethod}
+     *
+     * @param a
+     * @param b
+     * @return double distance between a and b
+     */
     public double getDistance(Point a, Point b){
 
         double distance;
@@ -359,6 +377,12 @@ public class KMeans implements ClusteringAlg {
     }
 
 
+    /**
+     * Assign point to a cluster
+     *
+     * @param point to be assigned
+     * @return Cluster cluster that the point had been assigned to
+     */
     public Cluster assignToCluster(Point point){
         if (point == null){
             System.err.println("Null Point cannot be assigned to a cluster.");
