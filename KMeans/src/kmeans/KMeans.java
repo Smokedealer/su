@@ -102,11 +102,11 @@ public class KMeans implements ClusteringAlg {
 
                 if(iteration > this.maxElbowIterations){
                     System.out.println("Exceeded maximum iterations for elbow method.");
-                    return this.previousResult;
+                    return this.results.get(this.results.firstKey());
                 }
                 if(this.clusterCount > this.data.length){
                     System.out.println("Not enough data for more clusters.");
-                    return this.previousResult;
+                    return this.results.get(this.results.firstKey());
                 }
 
                 this.results = new TreeMap<>();
@@ -132,7 +132,6 @@ public class KMeans implements ClusteringAlg {
             }
 
         }
-
 
         return this.results.get(this.results.firstKey());
     }
