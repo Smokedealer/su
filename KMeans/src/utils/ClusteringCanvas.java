@@ -7,20 +7,40 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
+
+/**
+ * Canvas/panel for clusters visualization.
+ *
+ * @author Vojtěch Kinkor
+ */
 public class ClusteringCanvas extends JPanel {
+    /** Rendered image. **/
     private BufferedImage temp;
+
+    /** Currently shown data. **/
     private Cluster[] clusters;
 
+    /**
+     * Canvas/panel for clusters visualization.
+     */
     public ClusteringCanvas() {
-        //image = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_ARGB);
-        //setPreferredSize(new Dimension(1280, 720));
     }
 
+    /**
+     * Sets new data.
+     * @param clusters New clusters.
+     */
     public void setData(Cluster[] clusters) {
         this.clusters = clusters;
         this.temp = null;
     }
 
+    /**
+     * Render data into an image.
+     * @param width Desired width.
+     * @param height Desired height.
+     * @return Image with clusters visualization.
+     */
     public BufferedImage renderImage(int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         this.setPreferredSize(new Dimension(width, height));
@@ -72,6 +92,14 @@ public class ClusteringCanvas extends JPanel {
         return image;
     }
 
+    /**
+     * Draw guidelines into the image.
+     * @param image Dest. image.
+     * @param g2 Dest. Graphics2D object.
+     * @param globalBounds Data bounds.
+     * @param scaleX Width scale (image width/data cover width ratio)
+     * @param scaleY Height scale (image height/data cover height ratio)
+     */
     private void drawGuideLines(BufferedImage image, Graphics2D g2, double[] globalBounds, double scaleX, double scaleY) {
         g2.setColor(Color.LIGHT_GRAY);
         //g2.setColor(Color.BLACK);
@@ -150,6 +178,15 @@ public class ClusteringCanvas extends JPanel {
         }
     }
 
+    /**
+     * Draw clusters (data) into the image.
+     * @param image Dest. image.
+     * @param g2 Dest. Graphics2D object.
+     * @param clusters Data to be drawn.
+     * @param globalBounds Data bounds.
+     * @param scaleX Width scale (image width/data cover width ratio)
+     * @param scaleY Height scale (image height/data cover height ratio)
+     */
     private void drawClusters(BufferedImage image, Graphics2D g2, Cluster[] clusters, double[] globalBounds, double scaleX, double scaleY) {
         int i = 0;
 
@@ -197,6 +234,9 @@ public class ClusteringCanvas extends JPanel {
         }
     }
 
+    /**
+     * Repaint of panel.
+     */
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;

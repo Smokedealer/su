@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Matěj Kareš on 17.01.2017.
+ * DBScan clustering algorithm.
+ *
+ * @author Matěj Kareš
  */
 public class DBScan implements ClusteringAlg {
 
@@ -35,7 +37,12 @@ public class DBScan implements ClusteringAlg {
     private int maxIterations;
 
 
-
+    /**
+     * Runs clustering algorithm.
+     * @param data Input "unsorted" data.
+     * @param conf Algorithm configuration.
+     * @return Data sorted into clusters.
+     */
     @Override
     public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
         if(conf == null) conf = new DBScanConf();
@@ -60,7 +67,9 @@ public class DBScan implements ClusteringAlg {
         return this.clusters.toArray(new Cluster[0]);
     }
 
-
+    /**
+     * DBScan alg entry point
+     */
     private void start(){
         for(Point p : this.data){
             if(p.isVisited()) continue;
@@ -80,6 +89,12 @@ public class DBScan implements ClusteringAlg {
         }
     }
 
+    /**
+     * Tries to expand cluster as much as possible.
+     * @param point Initial point (first point in cluster).
+     * @param neighbours Direct neighbours of initial point.
+     * @param cluster Cluster to be expanded.
+     */
     private void expandCluster(Point point, List<Point> neighbours, Cluster cluster){
         cluster.add(point);
 
@@ -103,9 +118,12 @@ public class DBScan implements ClusteringAlg {
         }
     }
 
+    /**
+     * Checks whether point is assigned to any cluster.
+     * @param p Point for checking.
+     * @return Result.
+     */
     private boolean isInCluster(Point p){
-        //if(clusters.isEmpty()) return false; // unnecessary, clusters.add() is called before this
-
         for(Cluster c : this.clusters){
             if(c.contains(p)) return true;
         }
@@ -113,6 +131,12 @@ public class DBScan implements ClusteringAlg {
         return false;
     }
 
+    /**
+     * Gets point's neighbours up to specified distance.
+     * @param p Point for checking
+     * @param maxDistance Maximal distance for checking.
+     * @return List of points.
+     */
     private List<Point> getNeighbours(Point p, double maxDistance){
         List<Point> neighbours = new ArrayList<>(2048);
 
@@ -145,6 +169,16 @@ public class DBScan implements ClusteringAlg {
     }
 
 
+    /**
+     * Undefined, returns null.
+     */
+    @Deprecated
+    @Override
+    public Cluster assignToCluster(Point point) {
+        return null;
+    }
+
+
     private Point getStartingPoint(){
         int index = 0;
 
@@ -160,14 +194,6 @@ public class DBScan implements ClusteringAlg {
 
         return null;
     }
-
-
-
-    @Override
-    public Cluster assignToCluster(Point point) {
-        return null;
-    }
-
 
     public int getMinPoints() {
         return this.minPoints;

@@ -1,28 +1,46 @@
 package structures;
-
 import java.util.Arrays;
 import java.util.HashSet;
 
+
 /**
- * Created by Matěj Kareš on 01.12.2016.
+ * Class representing a cluster - set of points with similar properties.
  */
 public class Cluster extends HashSet<Point> {
 
+    /** Counter for numbering. **/
     private static int clusterID = 0;
+
+    /** ID of cluster. **/
     private int id;
+
+    /** Centroid of cluster. **/
     private Point centroid;
+
+    /** Cluster is "shadow" = not so relevant for data, for example cluster of outliers. **/
     private boolean shadowCluster = false; // shadow clusters = before clustering or outliers (points excluded from all other clusters)
 
+    /**
+     * Class representing a cluster - set of points with similar properties.
+     */
     public Cluster(){
         super();
         this.id = clusterID++;
     }
 
+    /**
+     * Class representing a cluster - set of points with similar properties.
+     * @param data Initial points for cluster.
+     */
     public Cluster(Point[] data){
         this();
         this.addAll(Arrays.asList(data));
     }
 
+    /**
+     * Computes a geometrical middle (mean) of cluster.
+     * @return Point.
+     */
     public Point geometricalMiddle(){
         if(this.isEmpty()) return null;
 
@@ -44,6 +62,10 @@ public class Cluster extends HashSet<Point> {
         return center;
     }
 
+    /**
+     * Computers a geometric median of cluster.
+     * @return Point.
+     */
     public Point geometricMedian(){
         if(this.isEmpty()) return null;
 
@@ -66,6 +88,10 @@ public class Cluster extends HashSet<Point> {
         return median;
     }
 
+    /**
+     * Gets cluster's ID.
+     * @return ID.
+     */
     public int getId() {
         return this.id;
     }
@@ -114,7 +140,10 @@ public class Cluster extends HashSet<Point> {
         return bounds;
     }
 
-
+    /**
+     * Computes an average distance from point to centroid.
+     * @return Average distance from point to centroid
+     */
     public double average(){
         double average = 0;
         int count = 0;
@@ -129,6 +158,10 @@ public class Cluster extends HashSet<Point> {
         return average;
     }
 
+    /**
+     * Computes a median distance from point to centroid.
+     * @return Median distance from point to centroid
+     */
     public double median(){
         double[] distances = new double[this.size()];
         int i = 0;
@@ -142,18 +175,34 @@ public class Cluster extends HashSet<Point> {
         return distances[i / 2];
     }
 
+    /**
+     * Sets new centroid for cluster.
+     * @param centroid Point representing centroid.
+     */
     public void setCentroid(Point centroid) {
         this.centroid = centroid;
     }
 
+    /**
+     * Gets centroid of cluster.
+     * @return Point representing centroid.
+     */
     public Point getCentroid() {
         return this.centroid;
     }
 
+    /**
+     * Checks whether is cluster marked as shadow.
+     * @return Result.
+     */
     public boolean isShadowCluster() {
         return this.shadowCluster;
     }
 
+    /**
+     * Sets/unsets a cluster "shadow" mark.
+     * @param shadowCluster True if cluster should be marked as shadow.
+     */
     public void setShadowCluster(boolean shadowCluster) {
         this.shadowCluster = shadowCluster;
     }
@@ -167,13 +216,4 @@ public class Cluster extends HashSet<Point> {
                 '}';
     }
 
-    public double sse() {
-        double sse = 0;
-
-        for(Point p : this){
-            sse += Math.pow(this.geometricalMiddle().euclideanDistanceTo(p), 2d);
-        }
-
-        return sse;
-    }
 }

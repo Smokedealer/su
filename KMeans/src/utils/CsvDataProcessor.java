@@ -9,19 +9,25 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Created by Matěj Kareš on 30.01.2017.
+ * Class for processing CSV files.
+ *
+ * @author Matěj Kareš, Vojtěch Kinkor
  */
 public class CsvDataProcessor {
 
     private static final String CSV_SEPARATOR = ";";
 
-    public Cluster readFile(String filename){
-        File inputFile = new File(filename);
+    /**
+     * Parses CSV file into single cluster of points.
+     * @param file Input file.
+     * @return Cluster with points.
+     */
+    public Cluster readFile(File file){
 
         Cluster dataArrayList = new Cluster();
 
         try {
-            Scanner scanner = new Scanner(inputFile);
+            Scanner scanner = new Scanner(file);
             int dimension = 0;
 
             while (scanner.hasNextLine()){
@@ -72,14 +78,17 @@ public class CsvDataProcessor {
             return dataArrayList;
 
         } catch (FileNotFoundException e) {
-            System.out.println("File \"" + filename + "\" not found.");
-            return null;
-        } catch (NumberFormatException e){
-            System.out.println("Invalid data format.");
+            System.err.println("File \"" + file.getAbsolutePath() + "\" not found.");
             return null;
         }
     }
 
+    /**
+     * Saves clusets into CSV file.
+     * @param clusters Data - clusters.
+     * @param file Output file.
+     * @throws FileNotFoundException
+     */
     public void saveFile(Cluster[] clusters, File file) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(file);
 
@@ -109,6 +118,11 @@ public class CsvDataProcessor {
         pw.close();
     }
 
+    /**
+     * Tries to parse double from string.
+     * @param s String to be parsed.
+     * @return True = string is parseable.
+     */
     private static boolean isDouble(String s) {
         try {
             Double.parseDouble(s);

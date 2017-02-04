@@ -1,6 +1,4 @@
 package kmeans;
-
-
 import structures.Cluster;
 import structures.ClusteringAlg;
 import structures.ClusteringAlgConf;
@@ -8,8 +6,11 @@ import structures.Point;
 
 import java.util.*;
 
+
 /**
- * Created by kares on 30.11.2016.
+ * KMeans clustering algorithm.
+ *
+ * @author Matěj Kareš, Vojtěch Kinkor
  */
 public class KMeans implements ClusteringAlg {
 
@@ -42,22 +43,34 @@ public class KMeans implements ClusteringAlg {
     protected int maxIterations;
 
 
+    /** Map with results, keys are result "prices" (lower=better), values are found clusters. **/
     protected SortedMap<Double, Cluster[]> results;
 
+    /** Previous (last but one) results, used for elbowing. **/
     protected Cluster[] previousResult;
 
-    protected ArrayList<Double> elbowValues;
+    /** List prices for different cluster counts, used for elbowing. **/
+    protected List<Double> elbowValues;
 
+    /** Controls whether elbow method should be used. **/
     protected boolean isElbowingEnabled = false;
 
+    /** Elbow parameter, stop alg. when difference between two last iteration is below threshold. **/
     protected double elbowDifferenceAbsThreshold;
 
+    /** Elbow parameter, stop alg. when droprate between two last iteration is below threshold. **/
     protected double elbowDroprateThreshold = 0.8d;
 
+    /** Elbow parameter, top limit for iterations (also means stop alg. when there are more than x clusters). **/
     protected int maxElbowIterations = 15;
 
 
-
+    /**
+     * Runs clustering algorithm.
+     * @param data Input "unsorted" data.
+     * @param conf Algorithm configuration.
+     * @return Data sorted into clusters.
+     */
     @Override
     public Cluster[] doClustering(Point[] data, ClusteringAlgConf conf) {
 
@@ -118,6 +131,7 @@ public class KMeans implements ClusteringAlg {
                     if(this.clusterCount == 1) break;
                 }
 
+                // check if we should continue with more clusters or there is already sufficient elbow
                 if(!this.doElbowing()) return this.previousResult;
 
                 this.previousResult = this.results.get(this.results.firstKey());
@@ -136,7 +150,9 @@ public class KMeans implements ClusteringAlg {
         return this.results.get(this.results.firstKey());
     }
 
-
+    /**
+     * KMeans alg entry point.
+     */
     protected void start(){
         this.centroids = new Point[this.clusterCount];
         this.clusters = new Cluster[this.clusterCount];
@@ -164,9 +180,8 @@ public class KMeans implements ClusteringAlg {
     }
 
     /**
-     * Heuristic method to find if more clusters mean marginally better results.
-     *
-     * @return true - if the result wasn't good enough to stop
+     * Heuristic method to find if more clusters leads to significantly better results.
+     * @return True if the result wasn't good enough to stop (ie. if it's better to continue with "elbowing").
      */
     protected boolean doElbowing(){
         boolean result = true;

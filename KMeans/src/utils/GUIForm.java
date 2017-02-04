@@ -41,6 +41,7 @@ public class GUIForm extends JFrame {
     private JButton exportdataButton;
     private JButton exportgraphButton;
     private JSpinner kmeansElbowDroprateThresholdSpinner;
+    private JPanel controlPanel;
 
     private ClusteringCanvas clusteringCanvas;
     private utils.GUIController GUIController;
@@ -257,6 +258,10 @@ public class GUIForm extends JFrame {
 
     public void setGUIController(utils.GUIController GUIController) {
         this.GUIController = GUIController;
+    }
+
+    public void setControlPanelVisible(boolean visible) {
+        this.controlPanel.setVisible(visible);
     }
 
     public void showMessage(String message) {

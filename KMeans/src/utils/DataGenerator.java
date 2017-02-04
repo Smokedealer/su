@@ -6,10 +6,9 @@ import structures.Point;
 import java.util.Random;
 
 /**
- * Created by Matěj Kareš on 02.12.2016.
+ * Generator of clusters with random points upon specifying dimension, quantity and spread.
  *
- * Generates array of random points upon specifying dimension, quantity and spread.
- * Data will be equally spread so this is not ideal for clustering, just to simplify the testing
+ * @author Vojtěch Kinkor, Matěj Kareš
  */
 public class DataGenerator {
 
@@ -17,6 +16,13 @@ public class DataGenerator {
     private int pointCount;
     private double spread;
 
+    /**
+     * Generator of clusters with random points upon specifying dimension, quantity and spread.
+     * @param dimension Dimension of data (1D, 2D, 3D, 4D, ...). Must be positive.
+     * @param pointCount Number of points to be generated. Must be nonnegative.
+     * @param spread Spread for points. Must be nonnegative.
+     * @throws Exception If any of the parameters is invalid.
+     */
     public DataGenerator(int dimension, int pointCount, double spread) throws Exception {
         if(dimension <= 0 || pointCount < 0 || spread < 0) throw new Exception();
 
@@ -25,7 +31,12 @@ public class DataGenerator {
         this.spread = spread;
     }
 
-
+    /**
+     * Generates clusters with random points upon specifying dimension, quantity and spread.
+     * Data will be equally spread so this is the worst case scenario for clustering.
+     *
+     * @return Cluster with generated points.
+     */
     public Cluster generateData(){
         Cluster cluster = new Cluster();
         cluster.setShadowCluster(true);
@@ -37,6 +48,16 @@ public class DataGenerator {
         return cluster;
     }
 
+
+    /**
+     * Generates clusters with random points upon specifying dimension, quantity and spread.
+     * Data will be generated in "hyperball" clusters with specified spread.
+     * This can generate the best case scenario for clustering.
+     *
+     * @param centroidsSpread Spread of clusters.
+     * @param clustersCount Count of clusters to be generated.
+     * @return Cluster with generated points.
+     */
     public Cluster generateClusteredData(double centroidsSpread, int clustersCount){
         Cluster cluster = new Cluster();
         cluster.setShadowCluster(true);
@@ -63,7 +84,11 @@ public class DataGenerator {
         return cluster;
     }
 
-
+    /**
+     * Generates single random point with some random spread from zero.
+     * @param spread Spread limit.
+     * @return Point.
+     */
     private Point generateRandomPoint(double spread) {
         Point generatedPoint = new Point(this.dimension);
         Random rng = new Random();
@@ -76,6 +101,12 @@ public class DataGenerator {
         return generatedPoint;
     }
 
+    /**
+     * Generates single random point with some random spread from specified point.
+     * @param center Origin point.
+     * @param spread Spread limit.
+     * @return Point.
+     */
     private Point generateNearRandomPoint(Point center, double spread) {
         Point generatedPoint = new Point(this.dimension);
         Random rng = new Random();
