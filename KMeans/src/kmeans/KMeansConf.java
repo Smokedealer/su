@@ -45,7 +45,7 @@ public class KMeansConf implements ClusteringAlgConf {
      * Gets elbow droprate threshold parameter (stop clustering when the droprate is below).
      */
     public void setElbowDroprateThreshold(double elbowDroprateThreshold) {
-        if (elbowDroprateThreshold <= 0) return;
+        if (elbowDroprateThreshold < 0) return;
         this.elbowDroprateThreshold = elbowDroprateThreshold;
     }
     /**

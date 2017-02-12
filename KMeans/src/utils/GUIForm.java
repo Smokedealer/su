@@ -168,7 +168,7 @@ public class GUIForm extends JFrame {
             int method = this.methodComboBox.getSelectedIndex();
             ClusteringAlgConf conf = null;
 
-            switch(method) {
+            switch (method) {
 
                 case 0:
                 case 2:
@@ -251,7 +251,7 @@ public class GUIForm extends JFrame {
         });
     }
 
-    public void drawData(Cluster[] clusters){
+    public void drawData(Cluster[] clusters) {
         this.clusteringCanvas.setData(clusters);
         this.repaint();
     }
@@ -267,5 +267,6 @@ public class GUIForm extends JFrame {
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
+
 }
 

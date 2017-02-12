@@ -19,7 +19,7 @@ public class DBScanConf implements ClusteringAlgConf {
      * Sets maximal distance parameter.
      */
     public void setMaxDistance(double maxDistance) {
-        if(maxDistance <= 0) return;
+        if(maxDistance < 0) return;
         this.maxDistance = maxDistance;
     }
 
