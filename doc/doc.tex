@@ -47,7 +47,7 @@
 
 \section{Zadání}
 
-Cílem práce je vytvoření aplikaci pro shlukovou analýzu dat různými metodami. Aplikace bude umožňovat pracovat s daty libovolné dimenze. Součástí bude vizualizace dat ve 2D prostoru (tedy v prostoru omezeném na jednu až dvě dimenze) v podobě bodového grafu. Data bude možné náhodně vygenerovat, případně načíst ze souboru. Výsledek shlukování bude možné exportovat do souboru.
+Cílem práce je vytvoření aplikace pro shlukovou analýzu dat různými metodami. Aplikace bude umožňovat pracovat s daty libovolné dimenze. Součástí bude vizualizace dat ve 2D prostoru (tedy v prostoru omezeném na jednu až dvě dimenze) v podobě bodového grafu. Data bude možné náhodně vygenerovat, případně načíst ze souboru. Výsledek shlukování bude možné exportovat do souboru.
 
 
 
@@ -98,7 +98,7 @@ Obecně lze shlukování formalizovat na optimalizační problém, jehož vstupe
 	\item vzdálenostní (cenová) funkce,
 	\item optimalizační kritérium;
 \end{itemize}
-a neznámými veličinami:
+a neznámé veličiny:
 \begin{itemize}
 	\item počet shluků,
 	\item přiřazení jednotlivých objektů do shluků.
@@ -109,7 +109,7 @@ Cílem je pak minimalizace vzdálenostní funkce. Jedná se o tzv. NP-těžký p
 
 
 \subsection{K-Means}
-Tato shlukovací metoda vychází z předpokladu, že data lze vnímat jako body v euklidovském prostoru. Mezi tyto body je zaneseno k fiktivních bodů, tzv. \textit{centroidů}. Centroidy slouží jako geometrický střed jednotlivých shluků a příslušnost bodu ke shluku je tak dána nejbližším centroidem. Nejčastější metriky pro určení vzdálenosti u metody K-Means jsou euklidovská a manhattanská vzdálenost. Algoritmus funguje iteračně. Po přiřazení všech bodů nejbližším centroidům jsou centroidy posunuty do geometrického středu svého shluku a algoritmus je spuštěn znovu tolikrát, dokud není posun centroidů menší než zvolená hranice, případně se centroidy už nehýbou. 
+Tato shlukovací metoda vychází z předpokladu, že data lze vnímat jako body v euklidovském prostoru. Mezi tyto body je zaneseno $k$ fiktivních bodů, tzv. \textit{centroidů}. Centroidy slouží jako geometrický střed jednotlivých shluků a příslušnost bodu ke shluku je tak dána nejbližším centroidem. Nejčastější metriky pro určení vzdálenosti u metody K-Means jsou euklidovská a manhattanská vzdálenost. Algoritmus funguje iteračně. Po přiřazení všech bodů nejbližším centroidům jsou centroidy posunuty do geometrického středu svého shluku a algoritmus je spuštěn znovu tolikrát, dokud není posun centroidů menší než zvolená hranice, případně se centroidy už nehýbou. 
 
 Algoritmus (často nazýván dle svého autora Lloydův algoritmus) pracuje následovně:
 
@@ -122,7 +122,7 @@ Algoritmus (často nazýván dle svého autora Lloydův algoritmus) pracuje nás
 
 Kvalita shlukování je určena funkcí $J$, jejíž výstupem je průměrná vzdálenost bodů od jejich centroidů. Algoritmus K-Means spouštíme vícekrát pro různé počáteční body a hledáme nastavení takové, aby hodnota funkce $J$ byla co nejnižší. Pro $n$ opakování algoritmu dostaneme $n$ hodnot funkce $J$, z nichž nejmenší je lokální optimum. Globální optimum by bylo možné najít, pokud bychom vyzkoušeli všechny možné počáteční hodnoty pro inicializaci centroidů, avšak zlepšení výsledku funkce $J$ už bývá nepatrné a časová náročnost je neúměrná zlepšení.
 
-Počet shluků $k$ je dán jako parametr. K-Means nainicializuje $k$ náhodných počátečních bodů v prostoru, které jsou následně posouvány k nejbližším shlukům. U náhodně volených centroidů v prostoru může nastat situace, kdy bude jeden centroid umístěn tak daleko, že na něj nezbude žádný bod (jinými slovy každý bod je blíže jinému centroidu). V tomto případě je shluk prázdný a zaniká. Tato situace je nežádoucí vhledem k tomu, že uživatel zadává, kolik shluků očekává. Je tedy vhodné jako počáteční volit existující body z množiny vstupních dat, tímto způsobem budou počáteční pozice centroidů vždy u nějakého bodu a nestane se, že by clusteru nepřipadl žádný bod. Z této skutečnosti plyne také podmínka, že počet shluků $k$ musí být menší než velikost vstupních dat.
+Počet shluků -- $k$ -- je dán jako parametr. K-Means nainicializuje $k$ náhodných počátečních bodů v prostoru, které jsou následně posouvány k nejbližším shlukům. U náhodně volených centroidů v prostoru může nastat situace, kdy bude jeden centroid umístěn tak daleko, že na něj nezbude žádný bod (jinými slovy každý bod je blíže jinému centroidu). V tomto případě je shluk prázdný a zaniká. Tato situace je nežádoucí vhledem k tomu, že uživatel zadává, kolik shluků očekává. Je tedy vhodné jako počáteční volit existující body z množiny vstupních dat, tímto způsobem budou počáteční pozice centroidů vždy u nějakého bodu a nestane se, že by clusteru nepřipadl žádný bod. Z této skutečnosti plyne také podmínka, že počet shluků $k$ musí být menší než velikost vstupních dat.
 
 Pro zjištění počtu shluků lze využít tzv. \textit{metodu lokte (elbow method)}. Princip metody spočívá v inkrementálním volení počtu shluků a restartování algoritmu dokud nedojde k výraznému zlepšení hodnoty funkce $J$.
 
@@ -147,7 +147,7 @@ Principem algoritmu je nalezení nepřiřazeného bodu, kterým se začne tvoři
 	\item V množině bodů se najde první bod, který není přiřazen žádnému shluku a který ještě nebyl zvolen jako počáteční.
 	\item Prohledá se \textepsilon{} okolí tohoto bodu a je-li nalezen další bod, je přidán do shluku.
 	\item Pro každý nově přidaný bod do shluku se provede krok (2) dokud budou další body přibývat. Není-li přidán žádný nový bod pokračuje se na krok (4).
-	\item Pokud je v nově vzniklém shluku více bodů než je zadané minimum, je shluk uznán za platný, v opačném případě je rozpuštěn. 
+	\item Pokud je v nově vzniklém shluku více bodů, než je zadané minimum, je shluk uznán za platný, v opačném případě je rozpuštěn. 
 	\item Krok (1), dokud existují \uv{nenavštívené} (nepřiřazené a nezvolené) body.
 \end{enumerate}
 
@@ -271,7 +271,7 @@ Překlad aplikace je možný nástrojem Ant, pomocí souboru build.xml v kořeno
 Aplikaci lze spustit příkazem:
 
 \vspace{2mm}
-\texttt{> java -jar KMeans.jar}
+\texttt{> java -jar Clustering.jar}
 
 
 \subsection{Práce s aplikací}\label{subsec:prace-s-aplikace}
