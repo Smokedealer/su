@@ -182,14 +182,14 @@ Pro získání dat byly implementovány následující 3 možnosti:
 	
 	\item Náhodný generátor uniformních dat (rovnoměrně umístěných po prostoru). Výstup představuje nejhorší možný scénář pro provedení shlukování, neboť se v datech nevyskytuje žádný přirozený shluk. Za shluk lze považovat pouze data jako celek.
 	\begin{center}
-		\includegraphics[width=0.4\textwidth]{res/datauniform.png}
+		\includegraphics[width=0.5\textwidth]{res/datauniform.png}
 	\end{center}
 
 	\newpage
 
 	\item Náhodný generátor shlukovaných dat. Výstup představuje (v optimálním případě) nejlepší možný scénář pro shlukování -- v datech se vyskytují jednoznačně oddělitelné shluky.
 	\begin{center}
-		\includegraphics[width=0.4\textwidth]{res/dataclustered.png}
+		\includegraphics[width=0.5\textwidth]{res/dataclustered.png}
 	\end{center}
 
 	\item Načtení dat z externího souboru.
@@ -198,7 +198,7 @@ Pro získání dat byly implementovány následující 3 možnosti:
 \noindent
 Zpracování dat, v případě této aplikace tedy provedení shlukování, bylo implementováno algoritmy K-Means, DBScan a K-Medians.
 
-Bližší popis jednotlivých částí a jejich možností lze najít v kapitole 4.3.
+Bližší popis jednotlivých částí a jejich možností lze najít v kapitole \ref{subsec:prace-s-aplikace}.
 
 
 
@@ -248,7 +248,7 @@ Kód aplikace byl rozdělen dle vzoru MVC (model-view-controller), grafické roz
 \end{itemize}
 
 
-
+\newpage
 
 \section{Uživatelská příručka}
 
@@ -262,13 +262,13 @@ Aplikaci lze spustit příkazem:
 \texttt{\ldots\char`\\ > java -jar KMeans.jar}
 
 
-\subsection{Práce s aplikací}
+\subsection{Práce s aplikací}\label{subsec:prace-s-aplikace}
 Po spuštění se zobrazí grafické rozhraní, které se skládá z kontrolního panelu v levé části a oblasti pro vykreslení grafu v pravé části.
 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.8\textwidth]{res/gui.png}
+	\includegraphics[width=1\textwidth]{res/gui.png}
 	\caption{Grafické rozhraní aplikace}
 	\label{fig:obr-gui}
 \end{figure}

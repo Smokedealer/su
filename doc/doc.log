@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6210 64-bit) (preloaded format=pdflatex 2017.2.1)  13 FEB 2017 14:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6210 64-bit) (preloaded format=pdflatex 2017.2.1)  13 FEB 2017 14:46
 entering extended mode
 **./doc.tex
 (doc.tex
@@ -1289,25 +1289,25 @@ File: res/datauniform.png Graphic file (type png)
 
 <use res/datauniform.png>
 Package pdftex.def Info: res/datauniform.png used on input line 185.
-(pdftex.def)             Requested size: 166.7306pt x 175.41994pt.
+(pdftex.def)             Requested size: 208.41644pt x 219.28096pt.
  [5 <./res/dbscan.png> <./res/datauniform.png>]
 <res/dataclustered.png, id=165, 437.38406pt x 337.26pt>
 File: res/dataclustered.png Graphic file (type png)
 
 <use res/dataclustered.png>
 Package pdftex.def Info: res/dataclustered.png used on input line 192.
-(pdftex.def)             Requested size: 166.7306pt x 128.56152pt.
+(pdftex.def)             Requested size: 208.41644pt x 160.70448pt.
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 209.
 
  ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\t1lmtt.fd"
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [6 <./res/dataclustered.png>]
-<res/gui.png, id=175, 581.17125pt x 483.30562pt>
+) [6 <./res/dataclustered.png>] [7]
+<res/gui.png, id=180, 581.17125pt x 473.51906pt>
 File: res/gui.png Graphic file (type png)
  <use res/gui.png>
 Package pdftex.def Info: res/gui.png used on input line 271.
-(pdftex.def)             Requested size: 333.46758pt x 277.31598pt.
- [7 <./res/gui.png>]
+(pdftex.def)             Requested size: 416.83289pt x 339.62567pt.
+ [8 <./res/gui.png>]
 LaTeX Font Info:    Try loading font information for T1+pcr on input line 299.
  ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\t1pcr.fd"
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
@@ -1317,7 +1317,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 302.
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 320.
- [8]
+ [9]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 320.
  (doc.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 320.
@@ -1327,10 +1327,10 @@ Package rerunfilecheck Info: File `doc.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 320.
  ) 
 Here is how much of TeX's memory you used:
- 14371 strings out of 493333
- 200900 string characters out of 3139186
- 285218 words of memory out of 3000000
- 17653 multiletter control sequences out of 15000+200000
+ 14373 strings out of 493333
+ 200931 string characters out of 3139186
+ 285266 words of memory out of 3000000
+ 17654 multiletter control sequences out of 15000+200000
  64402 words of font info for 49 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  33i,6n,35p,1101b,1105s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1350,9 +1350,9 @@ ogram Files/MiKTeX 2.9/fonts/type1/public/lm/lmr7.pfb><C:/Program Files/MiKTeX
 ublic/lm/lmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy8.pf
 b><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmtt10.pfb><C:/Program Fil
 es/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb>
-Output written on doc.pdf (9 pages, 397004 bytes).
+Output written on doc.pdf (10 pages, 398306 bytes).
 PDF statistics:
- 264 PDF objects out of 1000 (max. 8388607)
- 51 named destinations out of 1000 (max. 500000)
+ 269 PDF objects out of 1000 (max. 8388607)
+ 52 named destinations out of 1000 (max. 500000)
  143 words of extra memory for PDF output out of 10000 (max. 10000000)
 
