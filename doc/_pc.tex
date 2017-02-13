@@ -1,0 +1,447 @@
+\documentclass[pdftex,a4paper]{article}
+\usepackage[lmargin=1.25in,rmargin=1.25in,tmargin=1in,bmargin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage[unicode,pdfdisplaydoctitle,pdftex,colorlinks,allcolors=black]{hyperref}
+\hypersetup {
+    pdftitle={Vizualizace grafu matematické funkce},
+    pdfauthor={Vojtěch Kinkor},
+}
+\title{Vizualizace grafu matematické funkce} 
+\author{Vojtěch Kinkor}     
+\date{\today}   
+
+\lstset{ %
+   backgroundcolor=\color{white},   
+   basicstyle=\footnotesize\ttfamily\fontfamily{pcr}\selectfont,      
+   breakatwhitespace=true,          		
+   breaklines=true,                 		
+   commentstyle=\itshape\color{Gray},    	
+   keywordstyle=\bfseries\color{blue},      
+   stringstyle=\color{ForestGreen},     	
+   escapeinside={\%*}{*)},          		
+   frame=none,                    			
+   keepspaces=true,                    
+   language=C,                 				
+   numbers=none,                    		
+}
+
+
+\begin{document}
+
+\input{titlepage.tex}
+
+\newpage
+\tableofcontents
+
+
+
+
+\newpage
+\section{Zadání}
+
+Naprogramujte v~ANSI C přenositelnou
+\footnote{Je třeba, aby bylo možné Váš program přeložit a~spustit na PC s~operačním prostředím Win32/64 (tj. operační systémy Microsoft Windows NT/2000/XP/Vista/7/8) a~s~běžnými distribucemi Linuxu (např. Ubuntu, OpenSUSE, Gentoo, Debian, atd.). Server, na který budete Vaši práci nahrávat a~který ji otestuje, má nainstalovaný operační systém Debian GNU/Linux 7.1 Wheezy s~jádrem verze 2.6.26-2 a~s~překladačem gcc 4.4.5.} 
+\textbf{konzolovou aplikaci}, která jako vstup načte z~parametru na příkazové řádce matematickou funkci ve tvaru y = f(x), provede její analýzu a~vytvoří soubor ve formátu \textsf{PostScript} s~grafem této funkce na zvoleném definičním oboru.
+\\\\
+Program se bude spouštět příkazem \texttt{graph.exe $\langle$func$\rangle$ $\langle$out-file$\rangle$ [$\langle$limits$\rangle$]}. Symbol \texttt{$\langle$func$\rangle$}
+zastupuje zápis dvojdimenzionální matematické funkce (funkce ve více dimenzích program řešit nebude, nalezne-li během analýzy zápisu funkce více nezávislých proměnných než jednu, vypíše srozumitelné chybové hlášení a~skončí). Symbol \texttt{$\langle$out-file$\rangle$} zastupuje jméno výstupního postscriptového souboru. Takže Váš program může být během testování spuštěn například takto:
+\\[2mm]
+\texttt{\ldots\char`\\ >graph.exe\ "sin(2*x)\^{}3"\ mygraph.ps}
+\\[2mm]
+Výsledkem práce programu bude soubor ve formátu \textsf{PostScript}, který bude zobrazovat graf zadané matematické funkce – ve výše uvedeném případě $y =\ $sin$(2x)^3$ – v~kartézské souřadnicové soustavě $(O; x, y)$ s~vyznačenými souřadnými osami a~(aspoň) význačnými hodnotami definičního oboru a~oboru hodnot funkce.
+\\\\
+Pokud nebudou na příkazové řádce uvedeny alespoň dva argumenty, vypište chybové hlášení a~stručný návod k~použití programu v~angličtině podle běžných zvyklostí (viz např. ukázková semestrální práce na webu předmětu Programování v~jazyce C). \textbf{Vstupem programu jsou pouze argumenty na příkazové řádce – interakce s~uživatelem pomocí klávesnice či myši v~průběhu práce programu se neočekává.}
+\\\\
+Hotovou práci odevzdejte v~jediném archivu typu ZIP prostřednictvím automatického odevzdávacího a~validačního systému. Archiv nechť obsahuje všechny zdrojové soubory potřebné k~přeložení programu, \textbf{makefile} pro Windows i Linux (pro překlad v~Linuxu připravte soubor pojmenovaný \texttt{makefile} a~pro Windows \texttt{makefile.win}) a~dokumentaci ve formátu PDF vytvořenou v~typografickém systému \TeX, resp. \LaTeX. Bude-li některá z~částí chybět, kontrolní skript Vaši práci odmítne.
+\\\\\\
+Celé zadání: \url{http://www.kiv.zcu.cz/studies/predmety/pc/doc/work/sw2013-02.pdf}
+
+
+
+
+
+
+\newpage
+\section{Shluková analýza}
+
+Prvotní úvaha se týká celkového postupu pro vyřešení úlohy. Na počátku máme pouze matematickou funkci s~jedním parametrem (resp. \uv{neznámou}). Aby bylo možné vytvořit graf, je potřeba tuto funkci co nejefektivněji vyhodnocovat pro různé parametry. V úloze se tedy jedná ve své podstatě o převedení funkce do jednoduše vyhodnotitelné podoby, vytvoření \uv{kalkulátoru} a~následně opakované vyhodnocování pro vykreslené velkého množství bodů do grafu.
+\\\\
+Úlohu lze tedy snadno rozdělit do několika samostatných částí:
+\begin{itemize}
+\item Analýza zadané matematické funkce
+\item Zpracování a~vyhodnocení matematického výrazu
+\item Vytvoření souboru ve formátu \textsf{PostScript} s~grafem 
+\end{itemize}
+
+
+\subsection{K-means}\label{subsect:analyza}
+
+Matematická funkce se do programu předává pomocí parametru na příkazové řádce a~program s~ní nadále pracuje jako s~řetězcem znaků. Můžeme tedy číst vstup znak po znaku. Ve funkci se mohou obecně objevit tyto symboly (v závorce vždy znaky, ze kterých se symbol může skládat):
+\begin{itemize}
+\item Konstanty (\texttt{0}--\texttt{9 . E e + -})
+\item Proměnné (\texttt{A}--\texttt{Z} \texttt{a}--\texttt{z} -- jeden znak)
+\item Aritmetické operátory (\texttt{+ - * / \^{}})
+\item Funkce (\texttt{A}--\texttt{Z} \texttt{a}--\texttt{z} -- dva a~více znaků)
+\item Závorky (\texttt{( )})
+\end{itemize}~
+
+Při zpracování je potřeba jednotlivé symboly od sebe oddělit a~také odhalit různé chyby v~zadaném výrazu. Postupným přidáváním částí pro jednotlivé symboly jsem dospěl k~následujícímu postupu, který se mi jeví jako poměrně nenáročný, ale přesto robustní:
+
+\begin{enumerate}
+\item Načtu jeden znak ze vstupního řetězce.
+\item Žádný ze symbolů nepožaduje výhradně malá nebo velká písmena, proto pokud je znak velké písmeno, převedu jej na malé.
+
+\item Načtený znak odpovídá sadě znaků pro konstanty -- znaky \texttt{0}--\texttt{9}; \texttt{e}, pokud předcházelo číslo; \texttt{+ -}, pokud předcházel znak \texttt{e}:
+\begin{itemize}
+\item Pokud není uložený začátek konstanty v~řetězci (tj. pozice prvního znaku), tak uložím aktuální pozici; jinak se vrátím zpět na krok 1. a~pokračuji ve čtení dalšího znaku.
+\end{itemize}
+\item Pokud podmínka z~bodu 3. neplatí a~je uložený začátek konstanty v~řetězci: 
+\begin{itemize}
+\item Pak jsem narazil na konec konstanty. Lze ji vykopírovat ze vstupního řetězce a~poté převést na číslo. To následně uložím a~vynuluji údaj pro začátek konstanty.
+\end{itemize}
+
+\item Načtený znak odpovídá sadě znaků pro funkce nebo proměnné -- znaky \texttt{a}--\texttt{z}:
+\begin{itemize}
+\item Pokud není uložený začátek funkce v~řetězci, tak si uložím aktuální pozici; jinak se vrátím zpět na krok 1. a~pokračuji ve čtení dalšího znaku.
+\end{itemize}
+\item Pokud podmínka z~bodu 5. neplatí a~je uložený začátek funkce v~řetězci:
+\begin{itemize}
+\item Zpracovaný je pouze jeden znak -- jedná se o proměnnou. Lze ověřit platnost proměnné -- v~tomto případě pouze zjistím, zda se jedná o znak \texttt{x}. Proměnnou uložím.
+\item Zpracovaných je více znaků -- poté se jedná o funkci. Ze vstupního řetězce vykopíruji samostatnou funkci a~ověřím, zda taková funkce existuje. Funkci uložím.
+\item Nakonec vynuluji údaj pro začátek funkce/proměnné.
+\end{itemize}
+
+\item Načtený znak odpovídá sadě znaků pro operátory nebo závorky -- znaky \texttt{+ - * / \^{} ( )}
+\begin{itemize}
+\item Lze provést kontroly dle různých pravidel (dva operátory za sebou, chybějící závorky, apod.). Podle vstupu uložím nebo jinak zpracuji.
+\end{itemize}
+
+\item Pokud načtený znak neodpovídá žádné skupině a~zároveň se nejedná o mezeru nebo ukončovací znak řetězce, pak se jedná o neplatný znak - zpracování se přeruší.
+
+\item Nakonec se proces vrátí zpět na 1. krok a~pokračuje ve čtení dalšího znaku, dokud nenarazí na ukončovací znak.
+
+\end{enumerate}
+
+
+\subsection{Zpracování a~vyhodnocení matematického výrazu}\label{subsect:zprac-vyhodn}
+Jakmile umím zadanou matematickou funkci analyzovat a~tedy i oddělit jednotlivé symboly, je potřeba ji převést do vyhodnotitelné podoby. Tato podoba má velký dopad na výslednou efektivitu během vyhodnocování a~tedy i rychlost celé aplikace. 
+
+Rozhodoval jsem se mezi dvěma běžně používanými metodami -- přímou tvorbou binárního stromu a~tvorbou jednorozměrného seznamu s~výrazem v~postfixové notaci (také známá jako \textit{RPN notace}). 
+
+Během realizace jsem tvorbu binárního stromu zavrhl ze dvou důvodů -- samotné vytvoření vyžaduje poměrně složitou analýzu. Alternativně je možné výraz nejprve převést do postfixové notace a~až poté strom vytvářet. Dalším důvodem je ale větší výpočetní náročnost, kvůli možné rozvětvenosti stromu. Procházení jednorozměrného \uv{plochého} seznamu v~druhé metodě bude vždy méně náročné.
+
+Druhá, nakonec zvolená, metoda spočívá v~implementaci algoritmu Shunting-Yard\footnote{algoritmus vyvinutý E. Dijkstrou. Popis viz: \url{http://en.wikipedia.org/wiki/Shunting-yard_algorithm}} do analýzy zadané funkce, čímž získáme výraz v~postfixové notaci uložený právě v~jednorozměrném seznamu. K vyhodnocení se využívá zásobník a~samotný algoritmus je značně jednoduchý:  
+
+\begin{enumerate}
+\item Načtu jeden znak.
+\item Pokud je znak konstanta -- vložím ji do zásobníku.
+\item Pokud je znak funkce nebo operátor potřebující \textit{n} parametrů:
+\begin{itemize}
+\item Zjistím, zda mám v~zásobníku alespoň \textit{n} prvků -- pokud ne, je zadaný výraz neplatný.
+\item Jinak ze zásobníku vyberu právě \textit{n} prvků, následně je pomocí příslušné funkce vyhodnotím. Výsledek vložím zpět do zásobníku.
+\end{itemize}
+\item Vrátím se na krok 1., pokud jsou ve výrazu další znaky.
+\item Jestliže zbylo v~zásobníku více než 1 prvek, je zadaný výraz neplatný.
+\item V opačném případně je zbylý prvek v~zásobníku výsledkem celého výrazu.
+\end{enumerate}
+
+
+\subsection{Vytvoření souboru ve formátu \textsf{PostScript} s~grafem}\label{subsect:vytv-ps}
+V této části není moc problémů, které by bylo potřeba řešit na teoretické úrovni. Základem je ruční vytvoření ukázkového grafu a~následné \uv{propojení} s~výpočetní částí programu. Jako předloha mi posloužil obrázek grafu, který se nachází v~zadání úlohy. 
+
+Za nejsložitější považuji správné vytvoření popisků os. Na začátku je potřeba zjistit maximální rozsahy pro obě osy. Ty se počítají jako absolutní hodnota z~rozdílu zaokrouhlených hodnot výstupního rozsahu grafu (min. hodnota se zaokrouhluje dolů, max. naopak nahoru) -- tj. pokud má mít osa X hodnoty od 3.14 do 6.28, pak bude její rozsah 4. Poté lze vypočíst přesný počet \uv{značek} na ose a~jejich odstup (\uv{rozměrový} v~grafu i hodnotový pro popisky) a~podle těchto hodnot je mohu zakreslit. Hodnotový rozestup značek by měl být co nejčitelnější (na jedno desetinné místo do rozsahu 5, jinak na celá čísla).
+
+Pro zakreslování hodnot funkce je nutné zvolit vhodnou \uv{jemnost} grafu, což odpovídá počtu hodnot, které se vypočtou a~následně do grafu zakreslí pro zadaný rozsah. Graf také nemusí být spojitý. Klasické vyšetření spojitosti není triviální záležitostí. Při dostatečně \uv{jemném} grafu je však možné jej nahradit velmi jednoduchým ověřování blízkého okolí aktuálního bodu, kdy jen hledáme příliš velký rozdíl mezi hodnotami v~předchozím, aktuálním a~následujícím bodě.
+
+
+\newpage
+\section{Popis implementace}
+
+\subsection{Struktura a~řídící modul \texttt{main.c}}
+Program se skládá z~řídícího modulu \texttt{main.c} a~dalších 6 modulů.
+
+Řídící modul zajišťuje především zpracování vstupních argumentů z~příkazové řádky, měření času běhu programu, případně spuštění nestandardních režimů (viz část \ref{subsect:nestd-rezimy} na straně \pageref{subsect:nestd-rezimy}). Nepovinný parametr s~rozsahem výstupního grafu se rozpoznává pomocí funkce \texttt{sscanf}, která umožňuje načítat dle vstupní masky z~řetězců. Další nepovinné parametry se porovnávají funkcí \texttt{strcmp}.
+
+\subsection{Modul \texttt{list.c}/\texttt{list.h}}
+Tento modul zastupuje dynamický datový seznam pro uchovávání různých datových objektů, v~tomto případě matematických symbolů. Základní části je opakující se datová struktura:
+
+\begin{lstlisting}
+typedef struct List {
+    struct List *prev;
+    struct List *next;  
+    struct MathObject *value;
+    int index;
+} List;
+\end{lstlisting}
+%
+Tato struktura uchovává odkaz na následující a~předcházející prvek v~seznamu, dále vlastní data -- odkaz na strukturu \texttt{MathObject} -- a~index prvku v~seznamu, který v~praxi slouží pouze ke zjištění celkového počtu prvků.
+\\\\
+Modul obsahuje tyto funkce:
+
+\begin{itemize}
+\item \texttt{List *List\_create()} \\ Vytvoří prázdnou strukturu (seznam, případně prvek seznamu) a~vrátí na ni odkaz, nebo \texttt{NULL}, pokud ji nelze vytvořit.
+
+\item \texttt{void List\_destroy(List *L)} \\ Odstraní stukturu předanou v~parametru.
+
+\item \texttt{int List\_isEmpty(List *L)} \\ Zjistí, zda je zadaný seznam prázdný.
+
+\item \texttt{List *List\_add(List *L, MathObject *value)} \\ Přidá na konec seznamu \texttt{L} prvek s~obsahem \texttt{value}. Vrací odkaz na přidaný prvek, nebo \texttt{NULL}, pokud ji nelze přidat.
+
+\item \texttt{MathObject *List\_removeFirst(List *L)} \\ Vrátí obsah (data) z~prvního prvku seznamu a~poté jej ze seznamu odstraní. Vrací \texttt{NULL}, pokud je seznam prázdný.
+
+\item \texttt{MathObject *List\_removeLast(List *L)} \\ Vrátí obsah z~posledního prvku seznamu a~poté jej ze seznamu odstraní. Vrací \texttt{NULL}, pokud je seznam prázdný.
+
+\item \texttt{MathObject *List\_getFirst(List *L)} \\ Vrátí obsah z~prvního prvku seznamu. Vrací \texttt{NULL}, pokud je seznam prázdný.
+
+\item \texttt{MathObject *List\_getLast(List *L)} \\ Vrátí obsah z~posledního prvku seznamu. Vrací \texttt{NULL}, pokud je seznam prázdný.
+
+\item \texttt{int List\_getNext(List *L, List **N, MathObject **out)} \\ Slouží k~iteraci seznamem. \texttt{L} je odkaz na celý seznam, \texttt{N} odkaz na aktuální prvek (při prvním použití je třeba použít znovu \texttt{L}), \texttt{out} slouží pro předání obsahu aktuálního prvku. Vrací 1, pokud se povedlo přečíst další prvek, jinak 0 (např. na konci seznamu).
+
+\item \texttt{int List\_size(List *L)} \\ Zjistí počet prvků v~seznamu (index posledního prvku).
+
+\item \texttt{int Lists\_checkAlloc(List *lists[], int cnt)} \\ Pomocná funkce -- ověří alokaci struktur předaných v~poli \texttt{lists}. Pokud se některou strukturu nepodařilo naalokovat (odkazuje na \texttt{NULL}), vypíše chybovou hlášku a~ostatní struktury v~poli dealokuje. Vrací 1 v~případě chyby, jinak 0.
+
+\item \texttt{int Lists\_destroy(List *lists[], int cnt)} \\ Pomocná funkce -- smaže zadaný počet struktur předaných v~poli \texttt{lists}.
+
+\end{itemize}
+
+
+
+
+\subsection{Modul \texttt{mathobject.c}/\texttt{mathobject.h}}
+Modul obsahující strukturu sloužící k~uchování matematické symbolu (\uv{objektu}) -- odkaz na operaci/funkci, konstantu, nebo neznámou (pozn.: jedná se jen o pozici neznámé v~poli všech používaných neznámých -- dle zadání však toto pole bude vždy obsahovat jen jednu neznámou a~to \texttt{x}).
+
+\begin{lstlisting}
+typedef struct MathObject {
+    char type;
+    union {
+        MathOperation *operation;
+        double operand;
+        int variable;
+    } values;
+} MathObject;
+\end{lstlisting}
+%
+V proměnné \texttt{type} se uchovává typ \uv{objektu}, který je uložený ve \texttt{values}. 
+\\\\
+Modul obsahuje tyto funkce:
+
+\begin{itemize}
+\item \texttt{MathObject *MathObject\_create\_operation(MathOperationType operation)} \\ 
+	  \texttt{MathObject *MathObject\_create\_operand(double operand)} \\
+	  \texttt{MathObject *MathObject\_create\_variable(int variable)} \\
+	  Vytvoří strukturu s~příslušným obsahem.
+	  
+\item \texttt{int MathObject\_isOperation(MathObject *M)} \\ 
+	  \texttt{int MathObject\_isOperand(MathObject *M)} \\
+	  \texttt{int MathObject\_isVariable(MathObject *M)} \\
+	  Zjistí, zda je zadaná struktura \texttt{M} příslušného typu.
+	  	  
+\item \texttt{MathOperation *MathObject\_getOperation(MathObject *M)} \\ 
+	  \texttt{double MathObject\_getOperand(MathObject *M)} \\
+	  \texttt{int MathObject\_getVariable(MathObject *M)} \\
+	  Vrátí obsah ze zadané struktury.
+	  	  	  
+\item \texttt{MathOperation *MathObject\_removeOperation(MathObject *M)} \\ 
+	  \texttt{double MathObject\_removeOperand(MathObject *M)} \\
+	  \texttt{int MathObject\_removeVariable(MathObject *M)} \\
+	  Vrátí obsah ze zadané struktury a~poté ji odstraní.
+	  
+\item \texttt{void MathObject\_destroy(MathObject *M)} \\ Odstraní zadanou strukturu.
+
+\end{itemize}
+
+
+
+\newpage
+\subsection{Modul \texttt{mathoperation.c}/\texttt{mathoperation.h}}
+Modul uchovávající funkce, které slouží ke zpracování aritmetických operátorů a~matematických funkcí ve výrazech.
+
+\begin{lstlisting}
+#define M_PI 3.14159265358979323846264338327
+#define MATHOPERATION_MAXARGS 2
+
+typedef enum { MOFS_LEFT, MOFS_RIGHT, MOFS_NONE, MOFS_CONST } MathOperationFnSide; 
+typedef enum { MOR_NAN, MOR_OK, MOR_ERR } MathOperationResult; 
+typedef enum { MOT_LB, MOT_RB, MOT_SP, MOT_ADD, MOT_SUB, MOT_MUL, MOT_DIV, MOT_POW, MOT_MOD, MOT_SIN, MOT_COS, MOT_TAN, MOT_ASIN, MOT_ACOS, MOT_ATAN, MOT_SINH, MOT_COSH, MOT_TANH, MOT_LN, MOT_LOG, MOT_EXP, MOT_ABS, MOT_CEIL, MOT_FLOOR, MOT_PI, MOT__LAST } MathOperationType; 
+
+typedef struct MathOperation {
+    MathOperationType type;
+    unsigned short priority;
+    const char *label;
+    MathOperationFnSide side;
+    short fnArguments;
+
+    MathOperationResult (*compute) (double[], double *);
+} MathOperation;
+
+MathOperation MathOperations[MOT__LAST];
+\end{lstlisting}
+%
+Definovaná konstanta \texttt{MATHOPERATION\_MAXARGS} uchovává maximální počet parametrů, které může jakákoliv matematická funkce v~programu zpracovávat. Výčtový typ \texttt{MathOperationFnSide} slouží pro označení asociativity operátorů a~funkcí. \texttt{MathOperationResult} předává informaci o výsledku výpočtu -- \textit{neznámý výsledek}, \textit{OK} a~\textit{chyba během zpracování}. \texttt{MathOperationType} slouží jako označení pro veškeré implementované matematické funkce a~operátory. Struktura \texttt{MathOperation} poté slouží k~uchování informací o dostupném operátoru/funkci i s~odkazem na programovou funkci zajišťující samotné zpracování během výpočtu. \\Globální pole \texttt{MathOperations} seskupuje všechny známé aritmetické operátory a~funkce.
+\\\\
+Modul obsahuje tyto funkce:
+
+\begin{itemize}
+\item \texttt{static MathOperationResult mop\_add (double a[], double *res)} \\
+      \ldots \\
+	  Skupina (celkem 22) programových funkcí zajišťující samotné výpočty. Předává se pole s~argumenty pro funkci a~odkaz na proměnnou, do které bude výsledek uložen. Funkce vrací výsledek operace.
+	  
+\item \texttt{MathOperationResult ResultCheck(double *res)} \\ 
+	  Pomocná funkce -- jednoduché ověření výsledku operace.
+	  	  
+\item \texttt{MathOperationType MathOperation\_find(char *op, int len)} \\ 
+	  Pokusí se nalézt příslušný operátor/funkci podle názvu. Předává se odkaz na začátek názvu matematické funkce v~řetězci a~jeho délka (počet znaků). Vrací označení příslušné funkce, případně \texttt{MOT\_\_LAST}, pokud nebyla nalezena.\\
+	  Pro vyhledávání používá funkci \texttt{strnicmp}, která je ale dostupná pouze pro OS Linux. Při kompilaci pro OS Microsoft Windows se pomocí preprocesoru nadefinuje tato funkce tak, aby byla volána ekvivalentní funkce \texttt{strncasecmp}.
+	  	  	  
+\end{itemize}
+
+
+
+\subsection{Modul \texttt{parser.c}/\texttt{parser.h}}
+Modul slouží ke zpracování zadané matematické funkce z~příkazové řádky. Obsahuje jedinou funkci:
+
+\begin{itemize}
+\item \texttt{List *ParseMathExpressionToRPN(char *input, char *variables)} \\
+	  Pokusí se zpracovat zadanou matematickou funkci v~řetězci \texttt{input}. Parametr \texttt{variables} obsahuje pole známých neznámých. Funkce vrací seznam symbolů v~postfixové notaci. Využívá algoritmus Shunting-Yard. Podrobný popis funkčnosti viz část \ref{subsect:analyza} na straně \pageref{subsect:analyza}. 
+ 
+\end{itemize}
+
+
+\newpage
+\subsection{Modul \texttt{rpncalc.c}/\texttt{rpncalc.h}}
+Modul slouží k~vyhodnocení matematického výrazu v~postfixové notaci. Opět obsahuje jedinou funkci:
+
+\begin{itemize}
+\item \texttt{MathOperationResult RPNCalc(List *input, double *result, double values[])} \\
+	  Vyhodnocuje výraz uložený v~seznamu \texttt{input}, výsledek uloží do proměnné, na kterou odkazuje \texttt{result}. Hodnoty neznámých (v našem případě pouze jedna) se předávají v~poli \texttt{values}. Funkce vrací výsledek výpočtu. Popis algoritmu viz část \ref{subsect:zprac-vyhodn} na straně \pageref{subsect:zprac-vyhodn}. Pro zlepšení výkonnosti funkce se jako zásobník využívá obyčejné pole a~proměnná uchovávající počet prvků v~daném poli. Velikost se stanoví z~počtu prvků v~seznamu \texttt{input} (jelikož se nyní zapisují pouze konstanty, bude toto pole vždy o málo větší, než je potřeba).
+ 
+\end{itemize}
+
+
+\subsection{Modul \texttt{grapher.c}/\texttt{grapher.h}}
+Modul zajišťující samotné vytvoření souboru ve formátu \textsf{PostScript} s~grafem zadané matematické funkce. Obsahuje tři globální celočíselné proměnné -- \texttt{GRAPHER\_WIDTH}, \texttt{GRAPHER\_HEIGHT} a~\texttt{GRAPHER\_PREC} -- sloužící k~nastavení rozměrů výstupního grafu, respektive \uv{jemnosti} vykreslování. Dále modul obsahuje tyto funkce:
+
+\begin{itemize}
+\item \texttt{void Grapher\_render(char *input, char *filename, double xmin, double xmax,\\double ymin, double ymax)} \\
+	  Funkce, která sama zajistí celé zpracování -- jako parametry se předává řetězec s~matematickou funkcí, název výstupního souboru a~rozsah grafu. Důležité části funkce jsou obecně popsány v~části \ref{subsect:vytv-ps} na straně \pageref{subsect:vytv-ps}. Nejprve se nechá zadaný výraz zpracovat do postfixové notace. V případě úspěchu se začne vykreslovat graf.
+	  
+\item \texttt{double roundd(double val, double prec)} \\
+	  Pomocná funkce -- slouží k~zaokrouhlení čísla \texttt{val} na určitý počet desetinných míst. 
+	  	  
+\item \texttt{void printList(List *L, char *variables)} \\
+	  Pomocná funkce používaná pouze při vývoji -- vytiskne obsah seznamu se zpracovaným matematickým výrazem. Jako druhý parametr se předává pole neznámých.
+	  
+\end{itemize}
+
+
+\newpage
+\section{Uživatelská příručka}
+
+\subsection{Překlad programu}
+Program je možné přeložit nástrojem \texttt{make}\footnote{Ve většině distribucí OS Linux bývá nástroj \texttt{make} předinstalován. Pro OS Microsoft Windows je nutné\\ nainstalovat např. prostředí Cygwin, viz: \url{http://www.cygwin.com/}}, stačí ve složce se zdrojovými soubory zavolat příkaz:
+\\[2mm]
+\texttt{\ldots\char`\\ > make}
+\\[2mm]
+Pokud vše proběhne správně, bude ve stejné složce i spouštěcí soubor s~názvem \texttt{graph.exe}.
+
+Pro překlad na OS Microsoft Windows je též možné využít překladové prostředí Visual Studio. Je nutné spustit konzoli \textit{Visual Studio Command Prompt} a~ve složce se zdrojovými soubory zavolat příkaz:
+\\[2mm]
+\texttt{\ldots\char`\\ > nmake -f Makefile.win}
+
+\subsection{Spuštění programu}
+Ovládání programu je přesně popsané v~kompletním zadání úlohy\footnote{\url{http://www.kiv.zcu.cz/studies/predmety/pc/doc/work/sw2013-02.pdf}}. Program v~základní podobě se spouští z~příkazové řádky příkazem\footnote{Pro unixové systémy (např. OS Linux) je nutné na začátek příkazu připsat \texttt{./}}
+\\[2mm]
+\texttt{graph.exe $\langle$func$\rangle$ $\langle$out-file$\rangle$ [$\langle$limits$\rangle$]}
+\\[2mm]
+Kde symbol \texttt{$\langle$func$\rangle$} zastupuje matematickou funkci, symbol \texttt{$\langle$out-file$\rangle$} jméno výstupního postscriptového souboru a~nepovinný symbol \texttt{$\langle$limits$\rangle$} definuje rozsah kresleného grafu. Pokud parametry nesouhlasí, vypíše se stručná uživatelská nápověda programu na obrazovku, viz obrázek \ref{fig:obr1}.
+\\
+
+\begin{figure}[h]
+\includegraphics[width=1\textwidth]{res/2013-12-31_154800.png}
+\caption{Výpis uživatelské nápovědy}
+\label{fig:obr1}
+\end{figure}
+
+\newpage
+
+O úspěšném průběhu je uživatel informován, rovněž tak, pokud se vyskytne chyba -- nejčastěji se jedná o chybu v~zadané matematické funkci. Viz obrázek \ref{fig:obr2}. 
+
+\begin{figure}[h]
+\includegraphics[width=1\textwidth]{res/2013-12-31_154938.png}
+\caption{Výpis chybové hlášky}
+\label{fig:obr2}
+\end{figure}
+
+
+\subsubsection*{Matematická funkce}
+Matematická funkce slouží k~popisu 2D grafu, očekává se v~obvyklém zápisu. Může obsahovat konstanty v~libovolném zápisu, proměnnou \texttt{x}, aritmetické operátory, funkce a~závorky. Navíc je přidána konstanta \texttt{pi}.
+\\\\
+Implementovány jsou následující funkce (\# zastupuje parametr funkce -- matematický výraz):
+\begin{itemize}
+\item \texttt{sin(\#) cos(\#) tan(\#)} -- goniometrické funkce
+\item \texttt{asin(\#) acos(\#) atan(\#)} -- cyklometrické funkce 
+\item \texttt{sinh(\#) cosh(\#) tanh(\#)} -- hyperbolometrické funkce 
+\item \texttt{ln(\#) log(\#)} -- přirozený a~dekadický logaritmus
+\item \texttt{exp(\#)} -- funkce $e^x$
+\item \texttt{abs(\#)} -- absolutní hodnota
+\item \texttt{ceil(\#) floor(\#)} -- zaokrouhlení nahoru a~dolů 
+\item \texttt{mod(\#,\#)} -- zbytek po dělení (\uv{modulo}) 
+\end{itemize}
+Program umožňuje i zadání dalších dobrovolných parametrů:
+\begin{itemize}
+\item \texttt{-t} -- Zobrazí dobu běhu programu
+\item \texttt{-p \#} -- Nastaví \uv{jemnost} vykreslovaného grafu (implicitně 10, min. 1)
+\item \texttt{-w \#}  -- Šířka grafu v~souboru \textsf{PostScript} (implicitně 595)
+\item \texttt{-h \#}  -- Výška grafu v~souboru \textsf{PostScript} (implicitně 500)
+\end{itemize}
+
+\subsubsection*{Nestandardní režimy běhu programu}\label{subsect:nestd-rezimy}
+Program lze spustit pomocí následujících příkazů v~dalších dvou nestandardních režimech, které nebyly v~zadání úlohy požadovány:
+
+\begin{description}
+\item[\texttt{graph.exe -calc}] -- Spustí režim interaktivního kalkulátoru. Zadávat lze výrazy ve stejné podobě, jako se používají pro vykreslení grafu. Do proměnné \texttt{x} se vždy ukládá výsledek poslední operace. Napsáním příkazu \texttt{exit} se program ukončí.
+\item[\texttt{graph.exe -test}] -- Spustí výkonnostní test s~předdefinovanou funkcí a~počtem opakování. Slouží pro porovnání výkonnosti aplikace při použití různých kompilátorů.
+\end{description}
+
+
+
+
+
+
+
+\newpage
+\section{Závěr}
+
+Práci jsem vyvíjel na počítači s~procesorem Intel Core i5 M480 s~6GB RAM s~OS Microsoft Windows 7. Používal jsem především překladač, který je součástí vývojového prostředí Microsoft Visual Studio 2010, a~zároveň testoval v~prostředí Cygwin s~překladačem \texttt{gcc} ve verzi 4.8.2 a~na Linuxovém serveru běžícím na platformě ARM s~překladačem \texttt{gcc} 3.4.6.
+
+Doba běhu programu se při implicitním nastavení pohybuje v~řádu desítek ms (20--80ms). Velikost výstupního souboru se běžně pohybuje v~rozmezí 80--150kB. Paměťová náročnost závisí na složitosti zadané matematické funkce -- obecně lze říci, že každý symbol ve funkci odpovídá 50--150B alokované paměti. Při běhu programu v~testovacím režimu, ve kterém se počítá velmi složitá funkce, nepřesáhla alokovaná paměť 2MB a~tato hodnota je po celou dobu programu téměř konstantní. Měření bylo prováděno pomocí nástroje Valgrind.
+
+Během programování jsem si oživil znalosti a~zvyklosti jazyka ANSI C, který považuji za značně programátorsky neefektivní, na druhou stranu jeho striktnost je dobrým vodítkem k~pochopení fungování programů, především pak správy paměti. Novou zkušeností bylo pro mne seznámení s~jazyky \textsf{PostScript} a~sázecím programem \TeX. Oba dva považuji za velmi zajímavé nástroje, především práce s~PostScriptem mě bavila. Psaní dokumentace v~\TeX u není nijak přehnaně složité, některé části jako například tvorba obsahu jsou příjemně zautomatizované a~autor se o ně nemusí nadále starat. 
+
+Program splňuje veškeré body zadání a~s~výsledkem jsem poměrně spokojený. Možná vylepšení vidím v~části kreslení grafu, především pak hledání nespojitostí funkcí a~minimalizaci výstupu. Všechny části programu jsou snadno znovupoužitelné a~rozšiřitelné.
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+

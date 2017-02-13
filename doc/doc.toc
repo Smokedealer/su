@@ -1,0 +1,15 @@
+\select@language {czech}
+\contentsline {section}{\numberline {1}Zad\IeC {\'a}n\IeC {\'\i }}{2}{section.1}
+\contentsline {section}{\numberline {2}Shlukov\IeC {\'a} anal\IeC {\'y}za}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Podobnost objekt\IeC {\r u} v datech}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Formalizace probl\IeC {\'e}mu}{3}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}K-Means}{3}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}DBScan}{4}{subsection.2.4}
+\contentsline {section}{\numberline {3}Popis implementace}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}Implementovan\IeC {\'a} funkcionalita}{5}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Rozd\IeC {\v e}len\IeC {\'\i } k\IeC {\'o}du}{6}{subsection.3.2}
+\contentsline {section}{\numberline {4}U\IeC {\v z}ivatelsk\IeC {\'a} p\IeC {\v r}\IeC {\'\i }ru\IeC {\v c}ka}{7}{section.4}
+\contentsline {subsection}{\numberline {4.1}P\IeC {\v r}eklad aplikace}{7}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Spu\IeC {\v s}t\IeC {\v e}n\IeC {\'\i } aplikace}{7}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Pr\IeC {\'a}ce s aplikac\IeC {\'\i }}{7}{subsection.4.3}
+\contentsline {section}{\numberline {5}Z\IeC {\'a}v\IeC {\v e}r}{8}{section.5}
