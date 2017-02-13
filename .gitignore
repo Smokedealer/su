@@ -53,25 +53,25 @@ Temporary Items
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-KMeans/.idea/workspace.xml
-KMeans/.idea/tasks.xml
+Clustering/.idea/workspace.xml
+Clustering/.idea/tasks.xml
 
 # Sensitive or high-churn files:
 .idea/dataSources/
 .idea/inspectionProfiles/
-KMeans/.idea/dataSources.ids
-KMeans/.idea/dataSources.xml
-KMeans/.idea/dataSources.local.xml
-KMeans/.idea/sqlDataSources.xml
-KMeans/.idea/dynamic.xml
-KMeans/.idea/uiDesigner.xml
+Clustering/.idea/dataSources.ids
+Clustering/.idea/dataSources.xml
+Clustering/.idea/dataSources.local.xml
+Clustering/.idea/sqlDataSources.xml
+Clustering/.idea/dynamic.xml
+Clustering/.idea/uiDesigner.xml
 
 # Gradle:
-KMeans/.idea/gradle.xml
+Clustering/.idea/gradle.xml
 .idea/libraries
 
 # Mongo Explorer plugin:
-KMeans/.idea/mongoSettings.xml
+Clustering/.idea/mongoSettings.xml
 
 ## File-based project format:
 *.iws
