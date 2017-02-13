@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
-<project name="kmeans" default="distjar">
-    <description>KMeans</description>
-    <property name="app.name" value="KMeans"/>
+<project name="clustering" default="distjar">
+    <description>Clustering</description>
+    <property name="app.name" value="Clustering"/>
     <property name="libs.dir" value="./libs"/>
     <property name="src.dir" value="./src"/>
     <property name="build.dir" value="./out/production"/>
     <property name="jar.dir" value="./out/artifacts"/>
-    <property name="bin.jar.file" value="KMeans.jar"/>
+    <property name="bin.jar.file" value="Clustering.jar"/>
     <property name="main-class" value="App"/>
 	
 	
