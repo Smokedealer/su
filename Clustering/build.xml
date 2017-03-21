@@ -10,23 +10,9 @@
     <property name="main-class" value="App"/>
 	
 	
-
-	<!-- BEGIN javac2 for IDEA forms compiling -->
-	<property name="idea.home" value="c:/Program Files (x86)/JetBrains/IntelliJ IDEA 2016.3/"/>
-
-	<property name="javac2.home" value="${idea.home}/lib"/>
-	<path id="javac2.classpath">
-		<pathelement location="${javac2.home}/javac2.jar"/>
-		<pathelement location="${javac2.home}/jdom.jar"/>
-		<pathelement location="${javac2.home}/asm-all.jar"/>
-		<pathelement location="${javac2.home}/jgoodies-forms.jar"/>
-	</path>
-	<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
-	<!-- END javac2 for IDEA forms compiling -->
-
     <path id="classpath">
         <pathelement location="${build.dir}"/>
-		<fileset dir="${idea.home}/redist">
+		<fileset dir="${libs.dir}">
             <include name="forms_rt.jar"/>
         </fileset>
     </path>
@@ -39,9 +25,9 @@
 
     <target name="compile">
         <mkdir dir="${build.dir}"/>
-        <javac2 srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false" encoding="UTF-8" compiler="javac1.8">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false" encoding="UTF-8" compiler="javac1.8">
             <classpath refid="classpath"/>
-        </javac2>
+        </javac>
     </target>
 
 
@@ -54,7 +40,7 @@
         <mkdir dir="${jar.dir}"/>
 
         <jar destfile="${jar.dir}/${bin.jar.file}" basedir="${build.dir}">
-			<zipgroupfileset dir="${idea.home}/redist" includes="forms_rt.jar"/>
+			<zipgroupfileset dir="${libs.dir}" includes="*"/>
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
             </manifest>
